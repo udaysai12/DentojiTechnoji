@@ -522,7 +522,10 @@ export const updateAppointment = async (req, res) => {
     const userRole = req.user.role;
     const userId = req.user.id;
 
-    console.log('📝 Updating appointment:', { hospitalId, patientId, appointmentId, updateData });
+    console.log('📝 Updating appointment:', { 
+      hospitalId, patientId, appointmentId, 
+      updateData, userRole, userId 
+    });
 
     // Validate IDs
     validateObjectId(patientId, 'patient');
@@ -535,65 +538,99 @@ export const updateAppointment = async (req, res) => {
     // Get current patient data
     const currentPatient = await Patient.findOne(filter);
     if (!currentPatient) {
-      return res.status(404).json({ message: 'Patient not found or unauthorized' });
+      return res.status(404).json({ 
+        success: false,
+        message: 'Patient not found or unauthorized' 
+      });
     }
 
     // Find the current appointment
     const currentAppointment = currentPatient.appointments.id(appointmentId);
     if (!currentAppointment) {
-      return res.status(404).json({ message: 'Appointment not found' });
+      return res.status(404).json({ 
+        success: false,
+        message: 'Appointment not found' 
+      });
     }
 
-    // Separate appointment data from patient data
-    const { patientName, patientPhone, status, appointmentDate, appointmentTime, treatment, doctor, priority, notes } = updateData;
+    // Extract and validate data
+    const { patientName, patientPhone, status, appointmentDate, appointmentTime, 
+            treatment, doctor, priority, notes } = updateData;
     
     // Validate status if provided
-    const validStatuses = ['Scheduled', 'Confirmed', 'Completed', 'Cancelled', 'Pending'];
+    const validStatuses = ['Scheduled', 'Confirmed', 'Completed', 'Cancelled', 'Pending', 'Rescheduled'];
     if (status && !validStatuses.includes(status)) {
-      return res.status(400).json({ message: `Invalid status: ${status}. Must be one of ${validStatuses.join(', ')}` });
+      return res.status(400).json({ 
+        success: false,
+        message: `Invalid status: ${status}. Must be one of ${validStatuses.join(', ')}` 
+      });
     }
 
-    // Validate other fields if provided
+    // Build update fields
     const updateFields = {};
+    
     if (appointmentDate) {
       const date = new Date(appointmentDate);
       if (isNaN(date.getTime())) {
-        return res.status(400).json({ message: 'Invalid appointment date format' });
+        return res.status(400).json({ 
+          success: false,
+          message: 'Invalid appointment date format' 
+        });
       }
       updateFields['appointments.$.appointmentDate'] = date;
     }
+    
     if (appointmentTime) {
       const timeRegex = /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/;
       if (!timeRegex.test(appointmentTime)) {
-        return res.status(400).json({ message: 'Invalid appointment time format. Use HH:MM format (e.g., 14:30)' });
+        return res.status(400).json({ 
+          success: false,
+          message: 'Invalid appointment time format. Use HH:MM format (e.g., 14:30)' 
+        });
       }
       updateFields['appointments.$.appointmentTime'] = appointmentTime.trim();
     }
-    if (treatment) {
-      updateFields['appointments.$.treatment'] = treatment.trim();
-    }
-    if (doctor) {
-      updateFields['appointments.$.doctor'] = doctor.trim();
-    }
+    
+    if (treatment) updateFields['appointments.$.treatment'] = treatment.trim();
+    if (doctor) updateFields['appointments.$.doctor'] = doctor.trim();
+    
     if (status) {
       updateFields['appointments.$.status'] = status;
+      console.log('🔄 Status being updated:', { 
+        from: currentAppointment.status, 
+        to: status 
+      });
     }
+    
     if (priority) {
       const validPriorities = ['Low', 'Medium', 'High', 'Urgent'];
       if (!validPriorities.includes(priority)) {
-        return res.status(400).json({ message: `Invalid priority: ${priority}. Must be one of ${validPriorities.join(', ')}` });
+        return res.status(400).json({ 
+          success: false,
+          message: `Invalid priority: ${priority}. Must be one of ${validPriorities.join(', ')}` 
+        });
       }
       updateFields['appointments.$.priority'] = priority;
     }
+    
     if (notes !== undefined) {
       updateFields['appointments.$.notes'] = notes ? notes.trim() : '';
     }
 
-    // Update appointment in patient's appointments array
+    // CRITICAL: Always update the updatedAt timestamp
+    updateFields['appointments.$.updatedAt'] = new Date();
+
+    // Check if we have any updates
     if (Object.keys(updateFields).length === 0) {
-      return res.status(400).json({ message: 'No valid update data provided' });
+      return res.status(400).json({ 
+        success: false,
+        message: 'No valid update data provided' 
+      });
     }
 
+    console.log('📝 Applying update fields:', updateFields);
+
+    // Perform the update
     const updatedPatient = await Patient.findOneAndUpdate(
       { ...filter, 'appointments._id': appointmentId },
       { $set: updateFields },
@@ -601,54 +638,69 @@ export const updateAppointment = async (req, res) => {
     );
 
     if (!updatedPatient) {
-      return res.status(404).json({ message: 'Failed to update appointment' });
+      return res.status(404).json({ 
+        success: false,
+        message: 'Failed to update appointment' 
+      });
     }
 
     // Update patient details if provided
-    const patientUpdates = {};
-    if (patientName) {
-      const nameParts = patientName.trim().split(' ');
-      patientUpdates.firstName = nameParts[0] || '';
-      patientUpdates.lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : '';
-    }
-    if (patientPhone) {
-      patientUpdates.primaryNumber = patientPhone.trim();
+    if (patientName || patientPhone) {
+      const patientUpdates = {};
+      if (patientName) {
+        const nameParts = patientName.trim().split(' ');
+        patientUpdates.firstName = nameParts[0] || '';
+        patientUpdates.lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : '';
+      }
+      if (patientPhone) {
+        patientUpdates.primaryNumber = patientPhone.trim();
+      }
+      
+      await Patient.findByIdAndUpdate(
+        patientId, 
+        { $set: patientUpdates }, 
+        { runValidators: true }
+      );
     }
 
-    if (Object.keys(patientUpdates).length > 0) {
-      await Patient.findByIdAndUpdate(patientId, { $set: patientUpdates }, { runValidators: true });
-    }
-
-    // Get the updated appointment and patient data
+    // Fetch the final updated data
     const finalPatient = await Patient.findById(patientId);
-    const appointment = finalPatient.appointments.id(appointmentId);
+    const updatedAppointmentData = finalPatient.appointments.id(appointmentId);
 
-    const appointmentData = {
-      ...appointment.toObject(),
+    const appointmentResponse = {
+      ...updatedAppointmentData.toObject(),
       patientName: `${finalPatient.firstName} ${finalPatient.lastName}`,
       patientPhone: finalPatient.primaryNumber || finalPatient.phoneNumber || 'N/A',
       patientId: finalPatient._id,
+      patientCustomId: finalPatient.patientId,
       hospitalId: finalPatient.hospitalId,
       adminId: finalPatient.adminId
     };
 
-    console.log('✅ Appointment updated successfully');
+    console.log('✅ Appointment updated successfully:', {
+      appointmentId,
+      oldStatus: currentAppointment.status,
+      newStatus: updatedAppointmentData.status,
+      updatedAt: updatedAppointmentData.updatedAt
+    });
 
     res.json({
-      message: 'Appointment updated successfully',
-      appointment: appointmentData
+      success: true,
+      message: 'Appointment status updated successfully',
+      appointment: appointmentResponse
     });
+
   } catch (error) {
     console.error('❌ Error updating appointment:', error);
     res.status(error.message.includes('Invalid') ? 400 : 500).json({ 
+      success: false,
       message: error.message.includes('Invalid') ? error.message : 'Error updating appointment', 
       error: error.message 
     });
   }
 };
-// GET ALL APPOINTMENTS WITH ENHANCED SYNC INFO
-// export const getAllAppointments = async (req, res) => {
-//   try {
+
+
 //     const userRole = req.user.role;
 //     const userId = req.user.id;
 //     const { hospitalId, page = 1, limit = 10, includeSyncInfo = false } = req.query;

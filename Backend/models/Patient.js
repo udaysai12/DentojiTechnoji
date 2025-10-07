@@ -1,4 +1,3 @@
-//patient.js
 
 import mongoose from 'mongoose';
 
@@ -19,8 +18,48 @@ const appointmentSchema = new mongoose.Schema({
     type: String,
     trim: true,
   },
+  status: {
+    type: String,
+    enum: ['Scheduled', 'Confirmed', 'Completed', 'Cancelled', 'Pending', 'Rescheduled'],
+    default: 'Scheduled'
+  },
+  priority: {
+    type: String,
+    enum: ['Low', 'Medium', 'High', 'Urgent'],
+    default: 'Medium'
+  },
+  notes: {
+    type: String,
+    trim: true,
+    default: ''
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now
+  },
+  updatedAt: {
+    type: Date,
+    default: Date.now
+  },
+  lastSyncedAt: {
+    type: Date
+  },
+  syncVersion: {
+    type: Number,
+    default: 1
+  }
+}, { 
+  _id: true,
+  timestamps: false // We're handling timestamps manually
 });
 
+// Pre-save hook for appointmentSchema to update updatedAt
+appointmentSchema.pre('save', function(next) {
+  this.updatedAt = new Date();
+  next();
+});
+
+// Rest of your patientSchema remains the same...
 const patientSchema = new mongoose.Schema({
   patientId: { type: String },
   firstName: { type: String },
@@ -29,13 +68,12 @@ const patientSchema = new mongoose.Schema({
   age: { type: Number },
   gender: { type: String },
   bloodType: { type: String },
-  deletedAt: { type: Date }, // Optional: track deletion timestamp
-  //status: { type: String, default: 'active' },
+  deletedAt: { type: Date },
   status: { 
-  type: String, 
-  enum: ['active', 'inactive', 'deleted'], 
-  default: 'active' 
-},
+    type: String, 
+    enum: ['active', 'inactive', 'deleted'], 
+    default: 'active' 
+  },
   patientType: { type: String },
   memberSince: { type: Date },
   lastVisit: { type: Date },
@@ -77,17 +115,10 @@ const patientSchema = new mongoose.Schema({
     }
   }],
   avatar: { type: String },
-  appointments: [appointmentSchema],
-  dentalPhotos: [{
-    type: String
-  }],
-  photoCount: {
-    type: Number,
-    default: 0
-  },
-  lastPhotoUpload: {
-    type: Date
-  },
+  appointments: [appointmentSchema], // Use the updated schema
+  dentalPhotos: [{ type: String }],
+  photoCount: { type: Number, default: 0 },
+  lastPhotoUpload: { type: Date },
   photoCategorySummary: {
     general: { type: Number, default: 0 },
     beforeTreatment: { type: Number, default: 0 },
@@ -108,76 +139,43 @@ const patientSchema = new mongoose.Schema({
   toObject: { virtuals: true }
 });
 
-// Indexes for better performance
+// Indexes and virtuals remain the same...
 patientSchema.index({ hospitalId: 1 });
 patientSchema.index({ hospitalId: 1, firstName: 1, lastName: 1 });
 patientSchema.index({ hospitalId: 1, primaryNumber: 1 });
 patientSchema.index({ patientId: 1 });
 
-// Virtual for full name
 patientSchema.virtual('fullName').get(function() {
   return `${this.firstName || ''} ${this.lastName || ''}`.trim();
 });
 
-// Virtual for checking if patient has photos
 patientSchema.virtual('hasPhotos').get(function() {
   return this.photoCount > 0 || (this.dentalPhotos && this.dentalPhotos.length > 0);
 });
 
-// Instance method to update photo category summary
 patientSchema.methods.updatePhotoCategorySummary = async function() {
   const PatientPhoto = mongoose.model('PatientPhoto');
-
   try {
     const categorySummary = await PatientPhoto.aggregate([
-      {
-        $match: {
-          patientId: this._id,
-          hospitalId: this.hospitalId,
-          isActive: true
-        }
-      },
-      {
-        $group: {
-          _id: "$category",
-          count: { $sum: 1 }
-        }
-      }
+      { $match: { patientId: this._id, hospitalId: this.hospitalId, isActive: true }},
+      { $group: { _id: "$category", count: { $sum: 1 }}}
     ]);
 
-    // Reset all counts to 0
     this.photoCategorySummary = {
-      general: 0,
-      beforeTreatment: 0,
-      duringTreatment: 0,
-      afterTreatment: 0,
-      xray: 0,
-      intraoral: 0,
-      extraoral: 0,
-      smile: 0,
-      consultation: 0
+      general: 0, beforeTreatment: 0, duringTreatment: 0, afterTreatment: 0,
+      xray: 0, intraoral: 0, extraoral: 0, smile: 0, consultation: 0
     };
 
-    // Update counts based on aggregation results
+    const categoryMapping = {
+      'general': 'general', 'before-treatment': 'beforeTreatment',
+      'during-treatment': 'duringTreatment', 'after-treatment': 'afterTreatment',
+      'x-ray': 'xray', 'intraoral': 'intraoral', 'extraoral': 'extraoral',
+      'smile': 'smile', 'consultation': 'consultation'
+    };
+
     categorySummary.forEach(item => {
-      const category = item._id;
-      const count = item.count;
-
-      // Map category names to our schema field names
-      const categoryMapping = {
-        'general': 'general',
-        'before-treatment': 'beforeTreatment',
-        'during-treatment': 'duringTreatment',
-        'after-treatment': 'afterTreatment',
-        'x-ray': 'xray',
-        'intraoral': 'intraoral',
-        'extraoral': 'extraoral',
-        'smile': 'smile',
-        'consultation': 'consultation'
-      };
-
-      if (categoryMapping[category]) {
-        this.photoCategorySummary[categoryMapping[category]] = count;
+      if (categoryMapping[item._id]) {
+        this.photoCategorySummary[categoryMapping[item._id]] = item.count;
       }
     });
 
@@ -187,23 +185,18 @@ patientSchema.methods.updatePhotoCategorySummary = async function() {
   }
 };
 
-// Pre-save middleware to calculate age if dateOfBirth is provided
 patientSchema.pre('save', function(next) {
   if (this.dateOfBirth && this.isModified('dateOfBirth')) {
     const today = new Date();
     const birthDate = new Date(this.dateOfBirth);
     let age = today.getFullYear() - birthDate.getFullYear();
     const monthDiff = today.getMonth() - birthDate.getMonth();
-
     if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
       age--;
     }
-
     this.age = age;
   }
   next();
 });
 
 export default mongoose.model('Patient', patientSchema);
-
-
