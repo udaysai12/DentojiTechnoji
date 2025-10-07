@@ -6,17 +6,17 @@ const medicationSchema = new mongoose.Schema({
   patientId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Patient',
-    required: true
+    //required: true
   },
   hospitalId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Hospital',
-    required: true
+    //required: true
   },
   adminId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Admin',
-    required: true
+    //required: true
   },
   appointmentDate: {
     type: Date,
@@ -26,7 +26,7 @@ const medicationSchema = new mongoose.Schema({
   // Prescription details
   diagnosis: {
     type: String,
-    required: true,
+   // required: true,
     trim: true
   },
   
@@ -34,28 +34,28 @@ const medicationSchema = new mongoose.Schema({
   medications: [{
     medicationName: {
       type: String,
-      required: true,
+     // required: true,
       trim: true
     },
     dosage: {
       type: String,
-      required: true,
+     // required: true,
       trim: true
     },
     frequency: {
       type: String,
-      required: true,
+      //required: true,
       enum: ['Once Daily', 'Twice Daily', 'Three times Daily', 'As needed'],
       default: 'Once Daily'
     },
     duration: {
       type: String,
-      required: true,
+     // required: true,
       trim: true
     },
     instruction: {
       type: String,
-      required: true,
+     // required: true,
       trim: true
     }
   }],
@@ -119,7 +119,7 @@ const medicationSchema = new mongoose.Schema({
   },
   prescribedBy: {
     type: String,
-    required: true,
+   // required: true,
     trim: true
   },
   

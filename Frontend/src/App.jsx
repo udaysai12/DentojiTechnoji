@@ -1,8 +1,9 @@
-// //App.jsx-1
-// import React, { useState, useEffect, createContext, useContext } from 'react';
-// import { BrowserRouter as Router, Routes, Route, useLocation, Navigate, Outlet } from 'react-router-dom';
+
+// //App.jsx - With Auto Logout at Midnight
+// import React, { useState, useEffect, createContext, useContext, useRef } from 'react';
+// import { BrowserRouter as Router, Routes, Route, useLocation, Navigate, Outlet, useNavigate } from 'react-router-dom';
 // import { Lock, X, AlertTriangle, Shield, User, Settings } from 'lucide-react';
-// import { ToastContainer } from 'react-toastify';
+// import { ToastContainer, toast } from 'react-toastify';
 // import 'react-toastify/dist/ReactToastify.css';
 
 // import { PermissionProvider, usePermissions } from './pages/PermissionContext';
@@ -51,10 +52,114 @@
 // import HostLogin from './components/Host/HostLogin';
 // import HostLogoutPage from './components/Host/HostLogout';
 
+
+
+// // ==================== AUTO LOGOUT AT MIDNIGHT COMPONENT ====================
+// function AutoLogoutAtMidnight() {
+//   const navigate = useNavigate();
+//   const timeoutRef = useRef(null);
+//   const location = useLocation();
+
+//   useEffect(() => {
+//     // Don't schedule logout on login/signup pages
+//     const publicPages = ['/login', '/signup', '/forgot-password', '/verify-code', '/reset-password', '/host/login'];
+//     if (publicPages.includes(location.pathname)) {
+//       return;
+//     }
+
+//     // Check if user is authenticated
+//     const token = localStorage.getItem('token');
+//     const hostToken = localStorage.getItem('host_auth_token');
+   
+//     if (!token && !hostToken) {
+//       return; // User not logged in, don't schedule logout
+//     }
+
+//     const scheduleLogout = () => {
+//       // Clear any existing timeout
+//       if (timeoutRef.current) {
+//         clearTimeout(timeoutRef.current);
+//       }
+
+//       // Get current time
+//       const now = new Date();
+     
+//       // Calculate midnight (12:00 AM) of next day
+//       const midnight = new Date(
+//         now.getFullYear(),
+//         now.getMonth(),
+//         now.getDate() + 1, // Next day
+//         0, 0, 0, 0 // 12:00:00 AM
+//       );
+
+//       // Calculate milliseconds until midnight
+//       const timeUntilMidnight = midnight.getTime() - now.getTime();
+
+//       console.log('🕐 Auto-logout scheduled for:', midnight.toLocaleString());
+//       console.log('⏱️ Time until logout:', Math.floor(timeUntilMidnight / 1000 / 60), 'minutes');
+
+//       // Schedule logout at midnight
+//       timeoutRef.current = setTimeout(() => {
+//         handleAutoLogout();
+//       }, timeUntilMidnight);
+//     };
+
+//     const handleAutoLogout = () => {
+//       console.log('🔒 Auto-logout triggered at midnight');
+     
+//       // Show toast notification
+//       toast.warning('Session expired at midnight. Please login again.', {
+//         position: 'top-center',
+//         autoClose: 5000,
+//         hideProgressBar: false,
+//         closeOnClick: true,
+//         pauseOnHover: true,
+//         draggable: true,
+//       });
+
+//       // Clear all authentication data
+//       localStorage.removeItem('token');
+//       localStorage.removeItem('host_auth_token');
+//       localStorage.removeItem('userRole');
+//       localStorage.removeItem('hospitalId');
+     
+//       // Clear any other session data if needed
+//       sessionStorage.clear();
+
+//       // Determine which login page to redirect to
+//       const isHostRoute = location.pathname.startsWith('/host/');
+//       const loginPath = isHostRoute ? '/host/login' : '/login';
+
+//       // Small delay to show the toast
+//       setTimeout(() => {
+//         navigate(loginPath, {
+//           replace: true,
+//           state: { message: 'Session expired at midnight. Please login again.' }
+//         });
+       
+//         // Force reload to ensure complete logout
+//         window.location.href = loginPath;
+//       }, 1000);
+//     };
+
+//     // Initial schedule
+//     scheduleLogout();
+
+//     // Cleanup on unmount
+//     return () => {
+//       if (timeoutRef.current) {
+//         clearTimeout(timeoutRef.current);
+//       }
+//     };
+//   }, [navigate, location.pathname]);
+
+//   return null;
+// }
+
 // // Create Access Control Context
 // const AccessControlContext = createContext();
 
-// // Enhanced Access Denied Modal Component - FIXED CROSS BUTTON
+// // Enhanced Access Denied Modal Component
 // function AccessDeniedModal({ isVisible, onClose, userRole, attemptedPage, hasPermissionSystem = false }) {
 //   const [isAnimating, setIsAnimating] = useState(false);
 //   const [progress, setProgress] = useState(0);
@@ -85,7 +190,6 @@
 //     }
 //   }, [isVisible, onClose]);
 
-//   // Fixed close handler
 //   const handleClose = () => {
 //     setIsAnimating(false);
 //     setProgress(0);
@@ -97,7 +201,7 @@
 //   if (!isVisible && !isAnimating) return null;
 
 //   return (
-//     <div 
+//     <div
 //       className={`fixed inset-0 z-[9999] flex items-center justify-center transition-all duration-300 ${
 //         isVisible && isAnimating
 //           ? 'bg-black/30 backdrop-blur-sm bg-opacity-50'
@@ -105,7 +209,7 @@
 //       }`}
 //       onClick={handleClose}
 //     >
-//       <div 
+//       <div
 //         className={`bg-white rounded-2xl shadow-2xl p-8 max-w-md mx-4 transform transition-all duration-500 border-2 border-red-100 ${
 //           isVisible && isAnimating
 //             ? 'scale-100 opacity-100 translate-y-0 rotate-0'
@@ -287,7 +391,7 @@
 //   }
 // };
 
-// // Host Protected Route Component - Separate from Admin/Receptionist
+// // Host Protected Route Component
 // function HostProtectedRoute({ children }) {
 //   const [isHostAuthenticated, setIsHostAuthenticated] = useState(null);
 //   const location = useLocation();
@@ -295,19 +399,18 @@
 //   useEffect(() => {
 //     const checkHostAuth = () => {
 //       const hostToken = localStorage.getItem('host_auth_token');
-      
+     
 //       if (!hostToken) {
 //         setIsHostAuthenticated(false);
 //         return;
 //       }
 
 //       try {
-//         // Verify host token validity
 //         const decoded = jwtDecode(hostToken);
 //         const currentTime = Date.now() / 1000;
-        
+       
 //         if (decoded.exp && decoded.exp < currentTime) {
-//           localStorage.removeItem('hostToken');
+//           localStorage.removeItem('host_auth_token');
 //           setIsHostAuthenticated(false);
 //           return;
 //         }
@@ -315,7 +418,7 @@
 //         setIsHostAuthenticated(true);
 //       } catch (err) {
 //         console.error('Host auth check error:', err);
-//         localStorage.removeItem('hostToken');
+//         localStorage.removeItem('host_auth_token');
 //         setIsHostAuthenticated(false);
 //       }
 //     };
@@ -338,7 +441,7 @@
 //   return children || <Outlet />;
 // }
 
-// // Admin/Receptionist Protected Route with Comprehensive Permission System
+// // Admin/Receptionist Protected Route
 // function ProtectedRoute({ allowedRoles, requirePermission, children }) {
 //   const [isAuthenticated, setIsAuthenticated] = useState(null);
 //   const [userRole, setUserRole] = useState(null);
@@ -377,56 +480,32 @@
 //     if (isAuthenticated && userRole && allowedRoles && !permissionLoading) {
 //       const hasRoleAccess = allowedRoles.includes(userRole) || allowedRoles.includes(contextRole);
 
-//       console.log('🔐 Permission Check:', {
-//         route: location.pathname,
-//         userRole,
-//         contextRole,
-//         allowedRoles,
-//         hasRoleAccess,
-//         requirePermission
-//       });
-
-//       // Admin users always have full access
 //       if ((userRole === 'Admin' || contextRole === 'Admin') && hasRoleAccess) {
-//         console.log('✅ Admin access granted');
 //         return;
 //       }
 
-//       // For Receptionist users, check both role and permissions
 //       if ((userRole === 'Receptionist' || contextRole === 'Receptionist') && hasRoleAccess) {
-//         // If permission is required, check it
 //         if (requirePermission) {
 //           const hasRequiredPermission = typeof requirePermission === 'string'
 //             ? hasPermission(requirePermission)
 //             : checkRoutePermission(location.pathname);
 
-//           console.log('🎫 Permission Check Result:', {
-//             required: requirePermission,
-//             hasIt: hasRequiredPermission,
-//             userPermissions: hasPermission ? 'Available' : 'Loading'
-//           });
-
 //           if (!hasRequiredPermission) {
 //             const pageName = getPageNameFromPath(location.pathname);
-//             console.log('❌ Access denied for:', pageName);
 //             triggerAccessDenied(pageName);
 //             return;
 //           }
 //         }
-//         console.log('✅ Receptionist access granted');
 //         return;
 //       }
 
-//       // If no role access, trigger access denied
 //       if (!hasRoleAccess) {
 //         const pageName = getPageNameFromPath(location.pathname);
-//         console.log('❌ Role access denied for:', pageName);
 //         triggerAccessDenied(pageName);
 //       }
 //     }
 //   }, [isAuthenticated, userRole, allowedRoles, requirePermission, location.pathname, triggerAccessDenied, hasPermission, checkRoutePermission, permissionLoading, contextRole]);
 
-//   // Helper function to get page name from path
 //   const getPageNameFromPath = (pathname) => {
 //     const pathMap = {
 //       '/dashboard': 'Dashboard',
@@ -444,7 +523,7 @@
 //       '/profile': 'Profile',
 //       '/pricing': 'Pricing'
 //     };
-    
+   
 //     return pathMap[pathname] || pathname.replace('/', '').charAt(0).toUpperCase() + pathname.replace('/', '').slice(1);
 //   };
 
@@ -460,7 +539,6 @@
 //     return <Navigate to="/login" replace />;
 //   }
 
-//   // Enhanced permission validation for receptionists
 //   if ((userRole === 'Receptionist' || contextRole === 'Receptionist') && requirePermission) {
 //     const hasRequiredPermission = typeof requirePermission === 'string'
 //       ? hasPermission(requirePermission)
@@ -471,7 +549,6 @@
 //     }
 //   }
 
-//   // Check if the user's role is allowed for this route
 //   const hasAnyRoleAccess = allowedRoles && (allowedRoles.includes(userRole) || allowedRoles.includes(contextRole));
 //   if (allowedRoles && !hasAnyRoleAccess) {
 //     return <Navigate to="/patients" replace />;
@@ -480,7 +557,7 @@
 //   return children || <Outlet />;
 // }
 
-// // Layout wrapper for routes with sidebar
+// // Layout Components
 // function SidebarLayout() {
 //   return (
 //     <div className="md:flex md:min-h-screen">
@@ -495,7 +572,6 @@
 //   );
 // }
 
-// // Layout wrapper for routes without sidebar
 // function SimpleLayout() {
 //   return (
 //     <div className="flex flex-col min-h-screen">
@@ -507,7 +583,6 @@
 //   );
 // }
 
-// // Host Layout without sidebar - for host admin pages
 // function HostLayout() {
 //   return (
 //     <div className="flex min-h-screen">
@@ -525,13 +600,14 @@
 // function AppLayout() {
 //   return (
 //     <div className="min-h-screen">
+//       {/* AUTO LOGOUT COMPONENT - Active on all pages */}
+//       <AutoLogoutAtMidnight />
+     
 //       <Routes>
-//         {/* ==================== HOST ROUTES (COMPLETELY SEPARATE) ==================== */}
-//         {/* Public Host Login */}
+//         {/* HOST ROUTES */}
 //         <Route path="/host/login" element={<HostLogin />} />
 //         <Route path="/host/logout" element={<HostLogoutPage />} />
-        
-//         {/* Protected Host Routes - No Sidebar, Separate Authentication */}
+       
 //         <Route element={<HostProtectedRoute />}>
 //           <Route element={<HostLayout />}>
 //             <Route path="/host/ClinicsandDoctors" element={<AdminDashboard />} />
@@ -543,38 +619,34 @@
 //           </Route>
 //         </Route>
 
-//         {/* ==================== PUBLIC ROUTES ==================== */}
+//         {/* PUBLIC ROUTES */}
 //         <Route path="/login" element={<Login />} />
 //         <Route path="/signup" element={<SignupPage />} />
-//         <Route path = "/forgot-password" element = {< ForgotPassword/>} />
+//         <Route path="/forgot-password" element={<ForgotPassword />} />
 //         <Route path="/verify-code" element={<VerifyCode />} />
-//         <Route path = "/reset-password" element = {< ResetPassword/>}/>
+//         <Route path="/reset-password" element={<ResetPassword />} />
 //         <Route path="/receptionist-pricing" element={<ReceptionistPricing />} />
 //         <Route path="/terms-of-service" element={<TermsOfService />} />
 //         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
 
-//         {/* ==================== ADMIN/RECEPTIONIST ROUTES ==================== */}
-//         {/* Routes without sidebar */}
+//         {/* ADMIN/RECEPTIONIST ROUTES */}
 //         <Route element={<ProtectedRoute allowedRoles={['Admin', 'Receptionist']} />}>
 //           <Route element={<SimpleLayout />}>
 //             <Route path="/logout" element={<Logout />} />
-            
-//             {/* Pricing page without sidebar - accessible to both Admin and Receptionist with permission */}
-//             <Route 
-//               path="/pricing" 
+//             <Route
+//               path="/pricing"
 //               element={
-//                 <ProtectedRoute 
-//                   allowedRoles={['Admin', 'Receptionist']} 
+//                 <ProtectedRoute
+//                   allowedRoles={['Admin', 'Receptionist']}
 //                   requirePermission="pricing"
 //                 >
 //                   <PricingPage />
 //                 </ProtectedRoute>
-//               } 
+//               }
 //             />
 //           </Route>
 //         </Route>
 
-//         {/* Admin-only routes without sidebar */}
 //         <Route element={<ProtectedRoute allowedRoles={['Admin']} />}>
 //           <Route element={<SimpleLayout />}>
 //             <Route path="/hospitalform" element={<HospitalForm />} />
@@ -582,189 +654,186 @@
 //           </Route>
 //         </Route>
 
-//         {/* Routes with sidebar - accessible to both Admin and Receptionist */}
 //         <Route element={<ProtectedRoute allowedRoles={['Admin', 'Receptionist']} />}>
 //           <Route element={<SidebarLayout />}>
-//             {/* Always accessible routes - NO PERMISSION REQUIRED */}
 //             <Route path="/patients" element={<PatientManagement />} />
 //             <Route path="/addpatient" element={<AddPatient />} />
 //             <Route path="/patientdata/:hospitalId/:patientId" element={<PatientDetailsPage />} />
 //             <Route path="/patientdata" element={<PatientDetailsPage />} />
 //             <Route path="/patientrecord" element={<Patentrecord />} />
-            
-//             {/* Messages route - requires 'whatsapp' permission for receptionists */}
-//             <Route 
-//               path="/messages" 
+           
+//             <Route
+//               path="/messages"
 //               element={
-//                 <ProtectedRoute 
-//                   allowedRoles={['Admin', 'Receptionist']} 
+//                 <ProtectedRoute
+//                   allowedRoles={['Admin', 'Receptionist']}
 //                   requirePermission="whatsapp"
 //                 >
 //                   <WhatsApp />
 //                 </ProtectedRoute>
-//               } 
+//               }
 //             />
 
-//             {/* Permission-based routes for Receptionists */}
-//             <Route 
-//               path="/dashboard" 
+//             <Route
+//               path="/dashboard"
 //               element={
-//                 <ProtectedRoute 
-//                   allowedRoles={['Admin', 'Receptionist']} 
+//                 <ProtectedRoute
+//                   allowedRoles={['Admin', 'Receptionist']}
 //                   requirePermission="dashboard"
 //                 >
 //                   <Dashboard />
 //                 </ProtectedRoute>
-//               } 
+//               }
 //             />
-//             <Route 
-//               path="/appointments" 
+//             <Route
+//               path="/appointments"
 //               element={
-//                 <ProtectedRoute 
-//                   allowedRoles={['Admin', 'Receptionist']} 
+//                 <ProtectedRoute
+//                   allowedRoles={['Admin', 'Receptionist']}
 //                   requirePermission="appointments"
 //                 >
 //                   <Appointments />
 //                 </ProtectedRoute>
-//               } 
+//               }
 //             />
-//             <Route 
-//               path="/staff" 
+//             <Route
+//               path="/staff"
 //               element={
-//                 <ProtectedRoute 
-//                   allowedRoles={['Admin', 'Receptionist']} 
+//                 <ProtectedRoute
+//                   allowedRoles={['Admin', 'Receptionist']}
 //                   requirePermission="staff"
 //                 >
 //                   <StaffManagement />
 //                 </ProtectedRoute>
-//               } 
+//               }
 //             />
-//             <Route 
-//               path="/labmanagement" 
+//             <Route
+//               path="/labmanagement"
 //               element={
-//                 <ProtectedRoute 
-//                   allowedRoles={['Admin', 'Receptionist']} 
+//                 <ProtectedRoute
+//                   allowedRoles={['Admin', 'Receptionist']}
 //                   requirePermission="labmanagement"
 //                 >
 //                   <LabManagement />
 //                 </ProtectedRoute>
-//               } 
+//               }
 //             />
-//             <Route 
-//               path="/profile" 
+//             <Route
+//               path="/profile"
 //               element={
-//                 <ProtectedRoute 
-//                   allowedRoles={['Admin', 'Receptionist']} 
+//                 <ProtectedRoute
+//                   allowedRoles={['Admin', 'Receptionist']}
 //                   requirePermission="profile"
 //                 >
 //                   <Profile />
 //                 </ProtectedRoute>
-//               } 
-//             />
-
-//               <Route path="/billing"
-//               element={
-//                 <ProtectedRoute
-//                 allowedRoles={['Admin','Receptionist']}
-//                 requirePermission="billing"
-//                 >
-//               <BillingPage />
-//               </ProtectedRoute>
 //               }
 //             />
-//             <Route 
-//               path="/settings" 
+
+//             <Route path="/billing"
 //               element={
-//                 <ProtectedRoute 
-//                   allowedRoles={['Admin', 'Receptionist']} 
+//                 <ProtectedRoute
+//                   allowedRoles={['Admin','Receptionist']}
+//                   requirePermission="billing"
+//                 >
+//                   <BillingPage />
+//                 </ProtectedRoute>
+//               }
+//             />
+//             <Route
+//               path="/settings"
+//               element={
+//                 <ProtectedRoute
+//                   allowedRoles={['Admin', 'Receptionist']}
 //                   requirePermission="settings"
 //                 >
 //                   <SettingsPage />
 //                 </ProtectedRoute>
-//               } 
+//               }
 //             />
-//             <Route 
-//               path="/consultant" 
+//             <Route
+//               path="/consultant"
 //               element={
-//                 <ProtectedRoute 
-//                   allowedRoles={['Admin', 'Receptionist']} 
+//                 <ProtectedRoute
+//                   allowedRoles={['Admin', 'Receptionist']}
 //                   requirePermission="consultant"
 //                 >
 //                   <DoctorConsultations />
 //                 </ProtectedRoute>
-//               } 
+//               }
 //             />
-//             <Route 
-//               path="/finance" 
+//             <Route
+//               path="/finance"
 //               element={
-//                 <ProtectedRoute 
-//                   allowedRoles={['Admin', 'Receptionist']} 
+//                 <ProtectedRoute
+//                   allowedRoles={['Admin', 'Receptionist']}
 //                   requirePermission="finance"
 //                 >
 //                   <FinancePage />
 //                 </ProtectedRoute>
-//               } 
+//               }
 //             />
-//             <Route 
-//               path="/share" 
+//             <Route
+//               path="/share"
 //               element={
-//                 <ProtectedRoute 
-//                   allowedRoles={['Admin', 'Receptionist']} 
+//                 <ProtectedRoute
+//                   allowedRoles={['Admin', 'Receptionist']}
 //                   requirePermission="share"
 //                 >
 //                   <DentalReferralScreen />
 //                 </ProtectedRoute>
-//               } 
+//               }
 //             />
-//             <Route 
-//               path="/receptionisttable" 
+//             <Route
+//               path="/receptionisttable"
 //               element={
-//                 <ProtectedRoute 
-//                   allowedRoles={['Admin', 'Receptionist']} 
+//                 <ProtectedRoute
+//                   allowedRoles={['Admin', 'Receptionist']}
 //                   requirePermission="receptionisttable"
 //                 >
 //                   <ReceptionistTable />
 //                 </ProtectedRoute>
-//               } 
+//               }
 //             />
-//             <Route 
-//               path="/treatmentencounters/:patientId" 
+//             <Route
+//               path="/treatmentencounters/:patientId"
 //               element={
-//                 <ProtectedRoute 
-//                   allowedRoles={['Admin', 'Receptionist']} 
+//                 <ProtectedRoute
+//                   allowedRoles={['Admin', 'Receptionist']}
 //                   requirePermission="treatmentencounters"
 //                 >
 //                   <TreatmentEncounters />
 //                 </ProtectedRoute>
-//               } 
+//               }
 //             />
-            
-//              <Route
-//               path="/medications/:patientId" 
+           
+//             <Route
+//               path="/medications/:patientId"
 //               element={
-//                 <ProtectedRoute 
-//                   allowedRoles={['Admin', 'Receptionist']} 
+//                 <ProtectedRoute
+//                   allowedRoles={['Admin', 'Receptionist']}
 //                   requirePermission="medications"
 //                 >
-//                 <MedicationTable />
+//                   <MedicationTable />
 //                 </ProtectedRoute>
 //               }
-//                />
-//             {/* Admin-only permission management */}
-//             <Route 
-//               path="/permissions" 
+//             />
+//             <Route
+//               path="/permissions"
 //               element={
 //                 <ProtectedRoute allowedRoles={['Admin']}>
 //                   <PermissionManagement />
 //                 </ProtectedRoute>
-//               } 
+//               }
 //             />
 //           </Route>
 //         </Route>
 
-//         {/* Default redirect */}
 //         <Route path="/" element={<Navigate to="/login" replace />} />
 //       </Routes>
+     
+//       {/* Toast Container for notifications */}
+//       <ToastContainer />
 //     </div>
 //   );
 // }
@@ -781,13 +850,16 @@
 //   );
 // }
 
-
-//App.jsx - With Auto Logout at Midnight
+//App.jsx - Complete Code with Global Loading Animation
 import React, { useState, useEffect, createContext, useContext, useRef } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation, Navigate, Outlet, useNavigate } from 'react-router-dom';
 import { Lock, X, AlertTriangle, Shield, User, Settings } from 'lucide-react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { DotLottieReact } from '@lottiefiles/dotlottie-react'; // ✅ ADD THIS
+
+// ✅ ADD THIS - Import your animation (make sure file has no spaces in name)
+import animationData from './assets/GladiatorTooth.json';
 
 import { PermissionProvider, usePermissions } from './pages/PermissionContext';
 import DentalSidebar from './components/DentalSidebar';
@@ -834,6 +906,33 @@ import Graph from './pages/AdminPages/Graph';
 import Subscription from './pages/AdminPages/Subscriptions';
 import HostLogin from './components/Host/HostLogin';
 import HostLogoutPage from './components/Host/HostLogout';
+
+// ==================== GLOBAL LOADING COMPONENT ====================
+function GlobalLoader() {
+  return (
+    <div
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100vw',
+        height: '100vh',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        background: '#fff',
+        zIndex: 99999,
+      }}
+    >
+      <DotLottieReact
+        data={animationData}
+        loop
+        autoplay
+        style={{ width: 300, height: 300 }}
+      />
+    </div>
+  );
+}
 
 // ==================== AUTO LOGOUT AT MIDNIGHT COMPONENT ====================
 function AutoLogoutAtMidnight() {
@@ -1619,7 +1718,25 @@ function AppLayout() {
   );
 }
 
+// ==================== MAIN APP COMPONENT WITH LOADING ====================
 export default function App() {
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Hide loader after 3 seconds
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 3000);
+
+    return () => clearTimeout(timer); // cleanup
+  }, []);
+
+  // Show loader while loading
+  if (loading) {
+    return <GlobalLoader />;
+  }
+
+  // Main app content after loading
   return (
     <Router>
       <AccessControlProvider>

@@ -1,9 +1,7 @@
-//MedicationTable-present code
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import { ArrowLeft, Plus, Trash2 } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, Edit3, Save, X } from 'lucide-react';
 import { toast } from 'react-toastify';
-//import DentalSidebar from '@/components/DentalSidebar';
 
 const MedicationTable = () => {
   // Router hooks
@@ -14,6 +12,7 @@ const MedicationTable = () => {
   // State management
   const [medications, setMedications] = useState([]);
   const [originalMedications, setOriginalMedications] = useState([]);
+  const [isEditMode, setIsEditMode] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
@@ -60,103 +59,94 @@ const MedicationTable = () => {
   };
 
   // API functions
-
-
-const fetchExistingMedications = async () => {
-  if (!patientId || !hospitalId) {
-    console.log('Missing patientId or hospitalId for fetching medications');
-    return [];
-  }
-
-  try {
-    const url = `${import.meta.env.VITE_BACKEND_URL}/api/medications/patient/${patientId}?hospitalId=${hospitalId}`;
-    console.log('Fetching from URL:', url);
-    
-    const response = await fetch(url, {
-      method: 'GET',
-      headers: getApiHeaders()
-    });
-
-    console.log('Response status:', response.status);
-
-    if (!response.ok) {
-      if (response.status === 404) {
-        console.log('No medications found (404)');
-        return [];
-      }
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+  const fetchExistingMedications = async () => {
+    if (!patientId || !hospitalId) {
+      console.log('Missing patientId or hospitalId for fetching medications');
+      return [];
     }
 
-    const data = await response.json();
-    console.log('Backend response:', data);
-    
-    // The key fix: data structure is different - it's data.medications, not data.data
-    if (data?.success && data?.medications) {
-      const allMedications = [];
+    try {
+      const url = `${import.meta.env.VITE_BACKEND_URL}/api/medications/patient/${patientId}?hospitalId=${hospitalId}`;
+      console.log('Fetching from URL:', url);
       
-      // data.medications is the array of prescriptions
-      const prescriptions = data.medications;
-      console.log('Processing prescriptions:', prescriptions.length);
-      
-      prescriptions.forEach((prescription, prescIndex) => {
-        if (prescription?.medications && Array.isArray(prescription.medications)) {
-          prescription.medications.forEach((medication, medIndex) => {
-            if (medication.medicationName && medication.medicationName.trim()) {
-              allMedications.push({
-                id: `existing_${prescription._id}_${medIndex}`,
-                medicationName: medication.medicationName,
-                dosage: medication.dosage || '',
-                frequency: medication.frequency || 'Once Daily',
-                when: medication.instruction || 'After Food',
-                duration: medication.duration || '',
-                prescriptionId: prescription._id,
-                prescriptionNumber: prescription.prescriptionNumber,
-                isNew: false,
-                isExisting: true
-              });
-            }
-          });
-        }
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: getApiHeaders()
       });
+
+      console.log('Response status:', response.status);
+
+      if (!response.ok) {
+        if (response.status === 404) {
+          console.log('No medications found (404)');
+          return [];
+        }
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      console.log('Backend response:', data);
       
-      console.log('Processed medications:', allMedications);
-      return allMedications;
+      if (data?.success && data?.medications) {
+        const allMedications = [];
+        const prescriptions = data.medications;
+        console.log('Processing prescriptions:', prescriptions.length);
+        
+        prescriptions.forEach((prescription, prescIndex) => {
+          if (prescription?.medications && Array.isArray(prescription.medications)) {
+            prescription.medications.forEach((medication, medIndex) => {
+              if (medication.medicationName && medication.medicationName.trim()) {
+                allMedications.push({
+                  id: `existing_${prescription._id}_${medIndex}`,
+                  medicationName: medication.medicationName,
+                  dosage: medication.dosage || '',
+                  frequency: medication.frequency || 'Once Daily',
+                  when: medication.instruction || 'After Food',
+                  duration: medication.duration || '',
+                  prescriptionId: prescription._id,
+                  prescriptionNumber: prescription.prescriptionNumber,
+                  isNew: false,
+                  isExisting: true
+                });
+              }
+            });
+          }
+        });
+        
+        console.log('Processed medications:', allMedications);
+        return allMedications;
+      }
+      
+      return [];
+    } catch (error) {
+      console.error('Error fetching medications:', error);
+      return [];
     }
-    
-    return [];
-  } catch (error) {
-    console.error('Error fetching medications:', error);
-    return [];
-  }
-};
+  };
 
-const initializeMedications = async () => {
-  if (!patientId || !hospitalId) return;
+  const initializeMedications = async () => {
+    if (!patientId || !hospitalId) return;
 
-  try {
-    setLoading(true);
-    console.log('Initializing medications for:', { patientId, hospitalId });
-    
-    const existingMedications = await fetchExistingMedications();
-    console.log('Fetched existing medications:', existingMedications);
-    
-    // Always add one empty row for new entries
-    const emptyMedication = getEmptyMedication();
-    const allMedications = [...existingMedications, emptyMedication];
-    
-    setMedications(allMedications);
-    setOriginalMedications([...existingMedications]);
-    setError(null);
-    
-  } catch (error) {
-    console.error('Error initializing medications:', error);
-    setError('Failed to load medications');
-    setMedications([getEmptyMedication()]);
-    setOriginalMedications([]);
-  } finally {
-    setLoading(false);
-  }
-};
+    try {
+      setLoading(true);
+      console.log('Initializing medications for:', { patientId, hospitalId });
+      
+      const existingMedications = await fetchExistingMedications();
+      console.log('Fetched existing medications:', existingMedications);
+      
+      setMedications(existingMedications);
+      setOriginalMedications([...existingMedications]);
+      setError(null);
+      
+    } catch (error) {
+      console.error('Error initializing medications:', error);
+      setError('Failed to load medications');
+      setMedications([]);
+      setOriginalMedications([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const getEmptyMedication = () => ({
     id: generateUniqueId(),
@@ -180,16 +170,11 @@ const initializeMedications = async () => {
     try {
       setSaving(true);
       
-      // Only save NEW medications (isNew: true and has content)
+      // Only save NEW medications that have at least a medication name
       const newMedications = medications
         .filter(medication => {
-          // Must be new AND have content
-          const hasContent = 
-            (medication.medicationName && medication.medicationName.trim()) ||
-            (medication.dosage && medication.dosage.trim()) ||
-            (medication.duration && medication.duration.trim());
-          
-          return medication.isNew && hasContent;
+          // Must be new AND have at least medicine name
+          return medication.isNew && medication.medicationName && medication.medicationName.trim();
         })
         .map(medication => ({
           medicationName: medication.medicationName?.trim() || '',
@@ -199,9 +184,10 @@ const initializeMedications = async () => {
           instruction: medication.when || 'After Food'
         }));
 
+      // If no new medications to save, just navigate without error
       if (newMedications.length === 0) {
-        toast.error('Please add at least one new medication with valid details');
-        return false;
+        console.log('No new medications to save, navigating...');
+        return true; // Return true to allow navigation
       }
 
       console.log('Saving NEW medications only:', newMedications);
@@ -244,20 +230,17 @@ const initializeMedications = async () => {
     if (mode === 'fromProforma') {
       navigate(`/treatmentencounters/${patientId}`);
     } else {
-      // Navigate back exactly like TreatmentEncounters does
       const backHospitalId = hospitalId || location.state?.hospitalId || 'default-hospital';
-      
-      // Get the most complete patient data available from multiple sources
       const currentPatientData = location.state?.patient || location.state?.patientData || null;
       
       navigate(backHospitalId !== 'default-hospital' 
         ? `/patientdata/${backHospitalId}/${patientId}` 
         : -1, {
         state: {
-          patient: currentPatientData, // Pass whatever patient data we have
+          patient: currentPatientData,
           hospitalId: backHospitalId,
           patientId: patientId,
-          refresh: ['medications'] // Only refresh medications section
+          refresh: ['medications']
         }
       });
     }
@@ -266,43 +249,51 @@ const initializeMedications = async () => {
   const handleAddRow = () => {
     const newMedication = getEmptyMedication();
     setMedications(prev => [...prev, newMedication]);
+    setIsEditMode(true);
   };
 
-  const handleDeleteRow = (id) => {
+const handleDeleteRow = async (id) => {
+  const medication = medications.find(m => m.id === id);
+  
+  // If it's a new medication (not saved to backend yet), just remove from state
+  if (medication.isNew) {
     setMedications(prev => {
-      const medicationToDelete = prev.find(med => med.id === id);
-      
-      // Don't allow deletion of existing medications from backend
-      if (medicationToDelete && medicationToDelete.isExisting) {
-        toast.warning('Cannot delete existing medications. You can only add new ones.');
-        return prev;
-      }
-      
-      const filtered = prev.filter(medication => medication.id !== id);
-      
-      // Ensure at least one empty row for new medication entry
-      const hasEmptyRow = filtered.some(med => 
-        med.isNew && !med.medicationName && !med.dosage && !med.duration
-      );
-      
-      if (!hasEmptyRow) {
-        filtered.push(getEmptyMedication());
-      }
-      
-      toast.info('New medication row deleted');
+      const filtered = prev.filter(m => m.id !== id);
+      console.log('After delete:', filtered);
+      toast.info('Medication row deleted');
       return filtered;
     });
-  };
-
+    return;
+  }
+  
+  // If it's an existing medication, call the backend to delete it
+  if (medication.prescriptionId) {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/api/medications/${medication.prescriptionId}`,
+        {
+          method: 'DELETE',
+          headers: getApiHeaders()
+        }
+      );
+      
+      const data = await handleApiError(response);
+      
+      if (data.success) {
+        setMedications(prev => prev.filter(m => m.id !== id));
+        setOriginalMedications(prev => prev.filter(m => m.id !== id));
+        toast.success('Medication deleted successfully');
+      }
+    } catch (error) {
+      console.error('Error deleting medication:', error);
+      toast.error('Failed to delete medication');
+    }
+  }
+};
   const handleInputChange = (id, field, value) => {
     setMedications(prev =>
       prev.map(medication => {
         if (medication.id === id) {
-          // Don't allow editing existing medications
-          if (medication.isExisting) {
-            toast.warning('Cannot edit existing medications. Add new medications in the empty rows.');
-            return medication;
-          }
           return { ...medication, [field]: value };
         }
         return medication;
@@ -314,9 +305,8 @@ const initializeMedications = async () => {
     const success = await saveMedications();
     if (success) {
       setError(null);
-      toast.success('Medications saved successfully!');
+      setIsEditMode(false);
       
-      // Navigate back like TreatmentEncounters - immediate navigation
       if (mode === 'fromProforma') {
         navigate(`/treatmentencounters/${patientId}`);
       } else {
@@ -325,10 +315,10 @@ const initializeMedications = async () => {
           ? `/patientdata/${backHospitalId}/${patientId}` 
           : -1, {
           state: {
-            patient: location.state?.patient, // Preserve patient data
+            patient: location.state?.patient,
             hospitalId: backHospitalId,
             patientId: patientId,
-            refresh: ['medications'] // Only refresh medications section
+            refresh: ['medications']
           }
         });
       }
@@ -336,31 +326,29 @@ const initializeMedications = async () => {
   };
  
   const handleCancel = () => {
-    // Reset to original medications plus one empty row
-    const resetMedications = [...originalMedications, getEmptyMedication()];
-    setMedications(resetMedications);
+    setMedications([...originalMedications]);
+    setIsEditMode(false);
     setError(null);
     toast.info('Changes cancelled');
     
-    // Navigate back with preserved patient data like TreatmentEncounters
+    // Navigate back to where we came from
     if (mode === 'fromProforma') {
       navigate(`/treatmentencounters/${patientId}`);
     } else {
       const backHospitalId = hospitalId || location.state?.hospitalId || 'default-hospital';
+      const currentPatientData = location.state?.patient || location.state?.patientData || null;
+      
       navigate(backHospitalId !== 'default-hospital' 
         ? `/patientdata/${backHospitalId}/${patientId}` 
         : -1, {
         state: {
-          patient: location.state?.patient, // Preserve patient data
+          patient: currentPatientData,
           hospitalId: backHospitalId,
           patientId: patientId
         }
       });
     }
   };
-
-
-
 
   // Effects
   useEffect(() => {
@@ -369,7 +357,6 @@ const initializeMedications = async () => {
 
   useEffect(() => {
     if (patientId && hospitalId) {
-
       initializeMedications();
     }
   }, [patientId, hospitalId]);
@@ -384,8 +371,6 @@ const initializeMedications = async () => {
   // Render helpers
   const renderTableCell = (medication, field, index) => {
     const commonClasses = "border border-gray-300 py-3 px-3 align-top";
-    const isExistingMedication = medication.isExisting;
-    const readOnlyClasses = isExistingMedication ? "bg-gray-50 text-gray-600" : "";
     
     if (field === 'serialNo') {
       return (
@@ -402,10 +387,9 @@ const initializeMedications = async () => {
             type="text"
             value={medication.medicationName}
             onChange={(e) => handleInputChange(medication.id, 'medicationName', e.target.value)}
-            className={`w-full py-2 px-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 rounded border border-gray-300 ${readOnlyClasses}`}
-            placeholder={isExistingMedication ? "" : "Medicine name"}
-            readOnly={isExistingMedication}
-            disabled={isExistingMedication}
+            className="w-full py-2 px-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 rounded border border-gray-300"
+            placeholder="Medicine name"
+            disabled={!isEditMode}
           />
         </td>
       );
@@ -418,10 +402,9 @@ const initializeMedications = async () => {
             type="text"
             value={medication.dosage}
             onChange={(e) => handleInputChange(medication.id, 'dosage', e.target.value)}
-            className={`w-full py-2 px-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 rounded border border-gray-300 ${readOnlyClasses}`}
-            placeholder={isExistingMedication ? "" : "Dosage"}
-            readOnly={isExistingMedication}
-            disabled={isExistingMedication}
+            className="w-full py-2 px-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 rounded border border-gray-300"
+            placeholder="Dosage"
+            disabled={!isEditMode}
           />
         </td>
       );
@@ -433,8 +416,8 @@ const initializeMedications = async () => {
           <select
             value={medication.frequency}
             onChange={(e) => handleInputChange(medication.id, 'frequency', e.target.value)}
-            className={`w-full py-2 px-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 rounded border border-gray-300 ${readOnlyClasses}`}
-            disabled={isExistingMedication}
+            className="w-full py-2 px-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 rounded border border-gray-300"
+            disabled={!isEditMode}
           >
             <option value="Once Daily">Once Daily</option>
             <option value="Twice Daily">Twice Daily</option>
@@ -451,8 +434,8 @@ const initializeMedications = async () => {
           <select
             value={medication.when}
             onChange={(e) => handleInputChange(medication.id, 'when', e.target.value)}
-            className={`w-full py-2 px-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 rounded border border-gray-300 ${readOnlyClasses}`}
-            disabled={isExistingMedication}
+            className="w-full py-2 px-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 rounded border border-gray-300"
+            disabled={!isEditMode}
           >
             <option value="After Food">After Food</option>
             <option value="Before Food">Before Food</option>
@@ -469,10 +452,9 @@ const initializeMedications = async () => {
             type="text"
             value={medication.duration}
             onChange={(e) => handleInputChange(medication.id, 'duration', e.target.value)}
-            className={`w-full py-2 px-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 rounded border border-gray-300 ${readOnlyClasses}`}
-            placeholder={isExistingMedication ? "" : "Duration"}
-            readOnly={isExistingMedication}
-            disabled={isExistingMedication}
+            className="w-full py-2 px-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 rounded border border-gray-300"
+            placeholder="Duration"
+            disabled={!isEditMode}
           />
         </td>
       );
@@ -481,29 +463,15 @@ const initializeMedications = async () => {
     if (field === 'actions') {
       return (
         <td className={`${commonClasses} w-20 text-center`}>
-          <div className="flex items-center justify-center space-x-2">
+          {isEditMode && (
             <button
-              onClick={handleAddRow}
-              className="p-2 text-blue-600 hover:text-blue-800 hover:bg-blue-50 cursor-pointer rounded transition-colors"
-              title="Add New Medication"
+              onClick={() => handleDeleteRow(medication.id)}
+              className="p-2 text-red-600 hover:text-red-800 hover:bg-red-50 cursor-pointer rounded transition-colors"
+              title="Delete Medication"
             >
-              <Plus className="w-4 h-4" />
+              <Trash2 className="w-4 h-4" />
             </button>
-            {!isExistingMedication && (
-              <button
-                onClick={() => handleDeleteRow(medication.id)}
-                className="p-2 text-red-600 hover:text-red-800 hover:bg-red-50 cursor-pointer rounded transition-colors"
-                title="Delete Medication"
-              >
-                <Trash2 className="w-4 h-4" />
-              </button>
-            )}
-            {isExistingMedication && (
-              <div className="w-8 h-8 flex items-center justify-center">
-                <span className="text-xs text-gray-400">Saved</span>
-              </div>
-            )}
-          </div>
+          )}
         </td>
       );
     }
@@ -542,6 +510,41 @@ const initializeMedications = async () => {
                 ({originalMedications.length} existing, {medications.filter(m => m.isNew).length} new)
               </span>
             </div>
+
+            <div className="flex items-center gap-3">
+              {medications.length === 0 && !isEditMode ? (
+                <button
+                  onClick={handleAddRow}
+                  className="flex items-center gap-2 cursor-pointer px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                >
+                  <Plus className="w-4 h-4" />
+                  Add First Medication
+                </button>
+              ) : (
+                <>
+                  {isEditMode && (
+                    <button
+                      onClick={handleAddRow}
+                      className="flex items-center gap-2 px-3 py-2 border border-green-600 cursor-pointer text-green-600 rounded-md hover:bg-green-50 transition-colors"
+                    >
+                      <Plus className="w-4 h-4" />
+                      Add Row
+                    </button>
+                  )}
+                  <button
+                    onClick={() => setIsEditMode(!isEditMode)}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-md transition-colors cursor-pointer border ${
+                      isEditMode
+                        ? 'text-orange-600 border-orange-600 hover:bg-orange-50'
+                        : 'text-blue-600 border-blue-600 hover:bg-blue-50'
+                    }`}
+                  >
+                    {isEditMode ? <X className="w-4 h-4" /> : <Edit3 className="w-4 h-4" />}
+                    {isEditMode ? 'Exit Edit' : 'Edit'}
+                  </button>
+                </>
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -555,16 +558,6 @@ const initializeMedications = async () => {
           </div>
         )}
 
-        {/* Info Banner */}
-        {/* {originalMedications.length > 0 && (
-          <div className="bg-blue-50 border border-blue-200 rounded-md p-4 mb-4">
-            <p className="text-blue-700 text-sm">
-              <strong>Note:</strong> Existing medications are shown in gray and cannot be edited. 
-              Add new medications in the white rows below.
-            </p>
-          </div>
-        )} */}
-
         {/* Table */}
         <div className="rounded-lg overflow-hidden relative">
           <div className="overflow-x-auto">
@@ -577,21 +570,50 @@ const initializeMedications = async () => {
                   <th className="px-4 py-4 text-left text-sm font-medium text-gray-700 w-40">Frequency</th>
                   <th className="px-4 py-4 text-left text-sm font-medium text-gray-700 w-36">When</th>
                   <th className="px-4 py-4 text-left text-sm font-medium text-gray-700 w-32">Duration</th>
-                  <th className="px-4 py-4 text-center text-sm font-medium text-gray-700 w-20">Actions</th>
+                  {isEditMode && (
+                    <th className="px-4 py-4 text-center text-sm font-medium text-gray-700 w-20">Actions</th>
+                  )}
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
-                {medications.map((medication, index) => (
-                  <tr key={medication.id} className={`hover:bg-gray-50 ${medication.isExisting ? 'bg-gray-25' : ''}`}>
-                    {renderTableCell(medication, 'serialNo', index)}
-                    {renderTableCell(medication, 'medicationName')}
-                    {renderTableCell(medication, 'dosage')}
-                    {renderTableCell(medication, 'frequency')}
-                    {renderTableCell(medication, 'when')}
-                    {renderTableCell(medication, 'duration')}
-                    {renderTableCell(medication, 'actions')}
+                {medications.length === 0 ? (
+                  <tr>
+                    <td colSpan={isEditMode ? "7" : "6"} className="px-4 py-12 text-center text-gray-500">
+                      <div>
+                        {isEditMode ? (
+                          <>
+                            <p className="mb-2 text-orange-600 font-medium">All medications have been deleted</p>
+                            <p className="text-sm text-gray-400 mb-3">You can add new medications or save to confirm deletion</p>
+                            <button
+                              onClick={handleAddRow}
+                              className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors text-sm"
+                            >
+                              <Plus className="w-4 h-4" />
+                              Add New Medication
+                            </button>
+                          </>
+                        ) : (
+                          <>
+                            <p className="mb-2">No medications recorded yet</p>
+                            <p className="text-sm text-gray-400">Click "Add First Medication" to get started</p>
+                          </>
+                        )}
+                      </div>
+                    </td>
                   </tr>
-                ))}
+                ) : (
+                  medications.map((medication, index) => (
+                    <tr key={medication.id} className="hover:bg-gray-50">
+                      {renderTableCell(medication, 'serialNo', index)}
+                      {renderTableCell(medication, 'medicationName')}
+                      {renderTableCell(medication, 'dosage')}
+                      {renderTableCell(medication, 'frequency')}
+                      {renderTableCell(medication, 'when')}
+                      {renderTableCell(medication, 'duration')}
+                      {isEditMode && renderTableCell(medication, 'actions')}
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>
@@ -599,27 +621,34 @@ const initializeMedications = async () => {
           {/* Bottom Action Bar */}
           <div className="px-4 py-4 border-t border-gray-200 flex justify-end items-center">
             <div className="flex gap-3 items-center">
-              <button
-                onClick={handleCancel}
-                disabled={saving}
-                className="px-6 py-2 text-gray-700 bg-white cursor-pointer border border-gray-300 rounded-md hover:bg-gray-50 transition-colors disabled:opacity-50"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleSave}
-                disabled={saving}
-                className="flex items-center gap-2 px-4 py-2 cursor-pointer bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50"
-              >
-                {saving ? (
-                  <>
-                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                    {mode === 'fromProforma' ? 'Saving & Next...' : 'Saving...'}
-                  </>
-                ) : (
-                  mode === 'fromProforma' ? 'Next' : 'Save'
-                )}
-              </button>
+              {isEditMode && (
+                <>
+                  <button
+                    onClick={handleCancel}
+                    disabled={saving}
+                    className="px-6 py-2 text-gray-700 bg-white cursor-pointer border border-gray-300 rounded-md hover:bg-gray-50 transition-colors disabled:opacity-50"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleSave}
+                    disabled={saving}
+                    className="flex items-center gap-2 px-4 py-2 cursor-pointer bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50"
+                  >
+                    {saving ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                        {mode === 'fromProforma' ? 'Saving & Next...' : 'Saving...'}
+                      </>
+                    ) : (
+                      <>
+                        <Save className="w-4 h-4" />
+                        {mode === 'fromProforma' ? 'Next' : 'Save Changes'}
+                      </>
+                    )}
+                  </button>
+                </>
+              )}
             </div>
           </div>
         </div>
