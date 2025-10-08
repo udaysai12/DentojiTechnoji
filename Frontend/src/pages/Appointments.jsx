@@ -1292,7 +1292,7 @@ import { toast } from 'react-toastify';
 import { jwtDecode } from 'jwt-decode';
 import { useNavigate } from "react-router-dom";
 import { FaEdit, FaEye, FaCalendarAlt, FaUsers, FaCheckCircle, FaBan } from "react-icons/fa";
-import { Trash2 } from "lucide-react";
+import { Trash2, Upload } from "lucide-react";
 import { Search, Download, ChevronsLeft, ChevronsRight } from "lucide-react";
 
 // Stats Card Component
@@ -2308,7 +2308,7 @@ const Appointments = () => {
               onClick={handleExport}
               className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-green-600 hover:text-white transition-colors flex items-center gap-2"
             >
-              <Download className="h-4 w-4" />
+              <Upload className="h-4 w-4" />
               Export
             </button>
           </div>

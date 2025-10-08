@@ -636,477 +636,476 @@ const AddAppointmentModal = ({
 
   if (!isOpen) return null;
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-hidden m-4 flex flex-col">
-        
-        {/* Confirmation Popup */}
-        {showConfirmation && (
-          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-60">
-            <div className="bg-white rounded-lg shadow-xl w-full max-w-md mx-4">
-              <div className="bg-green-50 px-6 py-4 rounded-t-lg border-b border-green-100">
+ return (
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-2 sm:p-4">
+    <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[95vh] sm:max-h-[90vh] overflow-hidden flex flex-col">
+      
+      {/* Confirmation Popup */}
+      {showConfirmation && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-60 p-4">
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-md">
+            <div className="bg-green-50 px-4 sm:px-6 py-3 sm:py-4 rounded-t-lg border-b border-green-100">
+              <div className="flex items-center">
+                <div className="flex-shrink-0">
+                  <CheckCircle className="h-6 w-6 sm:h-8 sm:w-8 text-green-400" />
+                </div>
+                <div className="ml-3">
+                  <h3 className="text-base sm:text-lg font-semibold text-green-800">
+                    Appointment {mode === 'edit' ? 'Updated' : 'Created'} Successfully!
+                  </h3>
+                  <p className="text-xs sm:text-sm text-green-600">
+                    The appointment has been {mode === 'edit' ? 'updated' : 'scheduled'}
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="bg-gray-50 px-4 sm:px-6 py-3 sm:py-4 rounded-b-lg">
+              <div className="flex justify-between items-center">
+                <p className="text-xs text-gray-500">Closing...</p>
                 <div className="flex items-center">
-                  <div className="flex-shrink-0">
-                    <CheckCircle className="h-8 w-8 text-green-400" />
-                  </div>
-                  <div className="ml-3">
-                    <h3 className="text-lg font-semibold text-green-800">
-                      Appointment {mode === 'edit' ? 'Updated' : 'Created'} Successfully!
-                    </h3>
-                    <p className="text-sm text-green-600">
-                      The appointment has been {mode === 'edit' ? 'updated' : 'scheduled'}
-                    </p>
-                  </div>
-                </div>
-              </div>
-              <div className="bg-gray-50 px-6 py-4 rounded-b-lg">
-                <div className="flex justify-between items-center">
-                  <p className="text-xs text-gray-500">Closing...</p>
-                  <div className="flex items-center">
-                    <div className="animate-spin rounded-full h-4 w-4 border-2 border-green-500 border-t-transparent mr-2"></div>
-                    <span className="text-sm text-green-600 font-medium">Success</span>
-                  </div>
+                  <div className="animate-spin rounded-full h-3 w-3 sm:h-4 sm:w-4 border-2 border-green-500 border-t-transparent mr-2"></div>
+                  <span className="text-xs sm:text-sm text-green-600 font-medium">Success</span>
                 </div>
               </div>
             </div>
-          </div>
-        )}
-
-        {/* Header */}
-        <div className="px-6 py-4 border-b border-gray-200 flex-shrink-0">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-xl font-semibold text-gray-900">
-                {mode === 'edit' ? 'Edit Appointment' : 'Add New Appointment'}
-              </h2>
-              {(patient || preSelectedPatient) && (
-                <p className="text-sm text-gray-600 mt-1">
-                  Patient: {(patient || preSelectedPatient).firstName} {(patient || preSelectedPatient).lastName} ({(patient || preSelectedPatient).patientId})
-                </p>
-              )}
-            </div>
-            <button
-              onClick={onClose}
-              className="p-2 text-gray-400 hover:text-gray-600 rounded-md"
-            >
-              <X size={20} />
-            </button>
           </div>
         </div>
+      )}
 
-        {/* Custom Field Popup */}
-        {isPopupOpen && (
-          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-60">
-            <div className="bg-white rounded-lg shadow-xl w-full max-w-md mx-4">
-              <div className="px-6 py-4 border-b border-gray-200">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-semibold text-gray-900">
-                    {editingField !== null ? 'Edit Field' : 'Add Custom Field'}
-                  </h3>
-                  <button
-                    onClick={() => {
-                      setIsPopupOpen(false);
-                      setNewField({ label: '', type: 'text', applyToAll: false });
-                      setEditingField(null);
-                    }}
-                    className="p-2 text-gray-400 hover:text-gray-600"
+      {/* Header */}
+      <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200 flex-shrink-0">
+        <div className="flex items-start sm:items-center justify-between gap-2">
+          <div className="min-w-0 flex-1">
+            <h2 className="text-lg sm:text-xl font-semibold text-gray-900 truncate">
+              {mode === 'edit' ? 'Edit Appointment' : 'Add New Appointment'}
+            </h2>
+            {(patient || preSelectedPatient) && (
+              <p className="text-xs sm:text-sm text-gray-600 mt-0.5 sm:mt-1 truncate">
+                Patient: {(patient || preSelectedPatient).firstName} {(patient || preSelectedPatient).lastName} ({(patient || preSelectedPatient).patientId})
+              </p>
+            )}
+          </div>
+          <button
+            onClick={onClose}
+            className="p-1.5 sm:p-2 text-gray-400 hover:text-gray-600 rounded-md flex-shrink-0"
+          >
+            <X size={18} className="sm:w-5 sm:h-5" />
+          </button>
+        </div>
+      </div>
+
+      {/* Custom Field Popup */}
+      {isPopupOpen && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-60 p-4">
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-md">
+            <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200">
+              <div className="flex items-center justify-between">
+                <h3 className="text-base sm:text-lg font-semibold text-gray-900">
+                  {editingField !== null ? 'Edit Field' : 'Add Custom Field'}
+                </h3>
+                <button
+                  onClick={() => {
+                    setIsPopupOpen(false);
+                    setNewField({ label: '', type: 'text', applyToAll: false });
+                    setEditingField(null);
+                  }}
+                  className="p-1.5 sm:p-2 text-gray-400 hover:text-gray-600"
+                >
+                  <X size={18} className="sm:w-5 sm:h-5" />
+                </button>
+              </div>
+            </div>
+
+            <div className="px-4 sm:px-6 py-3 sm:py-4">
+              <div className="space-y-3 sm:space-y-4">
+                <div>
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1.5 sm:mb-2">
+                    Field Label
+                  </label>
+                  <input
+                    type="text"
+                    value={newField.label}
+                    onChange={(e) => setNewField(prev => ({ ...prev, label: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="Enter field name"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1.5 sm:mb-2">
+                    Field Type
+                  </label>
+                  <select
+                    value={newField.type}
+                    onChange={(e) => setNewField(prev => ({ ...prev, type: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm bg-white focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
                   >
-                    <X size={20} />
-                  </button>
+                    <option value="text">Text</option>
+                    <option value="number">Number</option>
+                    <option value="email">Email</option>
+                    <option value="tel">Phone</option>
+                    <option value="date">Date</option>
+                    <option value="textarea">Textarea</option>
+                  </select>
                 </div>
               </div>
+            </div>
 
-              <div className="px-6 py-4">
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Field Label
-                    </label>
-                    <input
-                      type="text"
-                      value={newField.label}
-                      onChange={(e) => setNewField(prev => ({ ...prev, label: e.target.value }))}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                      placeholder="Enter field name"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Field Type
-                    </label>
-                    <select
-                      value={newField.type}
-                      onChange={(e) => setNewField(prev => ({ ...prev, type: e.target.value }))}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm bg-white focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                    >
-                      <option value="text">Text</option>
-                      <option value="number">Number</option>
-                      <option value="email">Email</option>
-                      <option value="tel">Phone</option>
-                      <option value="date">Date</option>
-                      <option value="textarea">Textarea</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-
-              <div className="px-6 py-4 bg-gray-50 border-t border-gray-200">
-                <div className="flex justify-end space-x-3">
-                  <button
-                    onClick={() => {
-                      setIsPopupOpen(false);
-                      setNewField({ label: '', type: 'text', applyToAll: false });
-                      setEditingField(null);
-                    }}
-                    className="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50 text-sm font-medium"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    onClick={handleAddCustomField}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm font-medium"
-                  >
-                    {editingField !== null ? 'Update' : 'Add Field'}
-                  </button>
-                </div>
+            <div className="px-4 sm:px-6 py-3 sm:py-4 bg-gray-50 border-t border-gray-200">
+              <div className="flex justify-end space-x-2 sm:space-x-3">
+                <button
+                  onClick={() => {
+                    setIsPopupOpen(false);
+                    setNewField({ label: '', type: 'text', applyToAll: false });
+                    setEditingField(null);
+                  }}
+                  className="px-3 sm:px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50 text-xs sm:text-sm font-medium"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleAddCustomField}
+                  className="px-3 sm:px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-xs sm:text-sm font-medium"
+                >
+                  {editingField !== null ? 'Update' : 'Add Field'}
+                </button>
               </div>
             </div>
           </div>
-        )}
+        </div>
+      )}
 
-        {/* Body - Made scrollable */}
-        <div className="flex-1 overflow-y-auto px-6 py-4">
-          {loading ? (
-            <div className="flex items-center justify-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-              <span className="ml-2 text-gray-600">Loading patient data...</span>
-            </div>
-          ) : (
-            <div className="space-y-6">
-              {/* Appointment Date and Time */}
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    <Calendar className="inline w-4 h-4 mr-1" />
-                    Appointment Date *
-                  </label>
-                  <input
-                    type="date"
-                    name="appointmentDate"
-                    value={formData.appointmentDate}
-                    onChange={handleInputChange}
-                    className={`w-full px-3 py-2 border rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 ${
-                      errors.appointmentDate ? 'border-red-300 bg-red-50' : 'border-gray-300'
-                    }`}
-                  />
-                  {errors.appointmentDate && (
-                    <p className="text-red-600 text-sm mt-1 flex items-center">
-                      <AlertCircle className="w-4 h-4 mr-1" />
-                      {errors.appointmentDate}
-                    </p>
-                  )}
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    <Clock className="inline w-4 h-4 mr-1" />
-                    Appointment Time *
-                  </label>
-                  <input
-                    type="time"
-                    name="appointmentTime"
-                    value={formData.appointmentTime}
-                    onChange={handleInputChange}
-                    min="00:00"
-                    max="24:00"
-                    step="900"
-                    className={`w-full px-3 py-2 border rounded-md text-sm bg-white focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 ${
-                      errors.appointmentTime ? 'border-red-300 bg-red-50' : 'border-gray-300'
-                    }`}
-                  />
-                  {errors.appointmentTime && (
-                    <p className="text-red-600 text-sm mt-1 flex items-center">
-                      <AlertCircle className="w-4 h-4 mr-1" />
-                      {errors.appointmentTime}
-                    </p>
-                  )}
-                  {/* <p className="text-xs text-gray-500 mt-1">Available: 8:00 AM - 8:00 PM</p> */}
-                </div>
-              </div>
-
-              {/* Treatment and Doctor */}
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    <Stethoscope className="inline w-4 h-4 mr-1" />
-                    Treatment *
-                  </label>
-                  <input
-                    type="text"
-                    name="treatment"
-                    value={formData.treatment}
-                    onChange={handleInputChange}
-                    list="treatments"
-                    maxLength="100"
-                    className={`w-full px-3 py-2 border rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 ${
-                      errors.treatment ? 'border-red-300 bg-red-50' : 'border-gray-300'
-                    }`}
-                    placeholder="Enter treatment"
-                  />
-                  <datalist id="treatments">
-                    {availableTreatments.map(treatment => (
-                      <option key={treatment} value={treatment} />
-                    ))}
-                  </datalist>
-                  {errors.treatment && (
-                    <p className="text-red-600 text-sm mt-1 flex items-center">
-                      <AlertCircle className="w-4 h-4 mr-1" />
-                      {errors.treatment}
-                    </p>
-                  )}
-                  <p className="text-xs text-gray-500 mt-1">
-                    {formData.treatment.length}/100 characters
-                  </p>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    <User className="inline w-4 h-4 mr-1" />
-                    Doctor
-                  </label>
-                  <input
-                    type="text"
-                    name="doctor"
-                    value={formData.doctor}
-                    onChange={handleInputChange}
-                    list="doctors"
-                    maxLength="50"
-                    className={`w-full px-3 py-2 border rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 ${
-                      errors.doctor ? 'border-red-300 bg-red-50' : 'border-gray-300'
-                    }`}
-                    placeholder="Enter doctor name"
-                  />
-                  <datalist id="doctors">
-                    {availableDoctors.map(doctor => (
-                      <option key={doctor} value={doctor} />
-                    ))}
-                  </datalist>
-                  {errors.doctor && (
-                    <p className="text-red-600 text-sm mt-1 flex items-center">
-                      <AlertCircle className="w-4 h-4 mr-1" />
-                      {errors.doctor}
-                    </p>
-                  )}
-                  <p className="text-xs text-gray-500 mt-1">
-                    {formData.doctor.length}/50 characters
-                  </p>
-                </div>
-              </div>
-
-              {/* Status and Priority */}
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Status
-                  </label>
-                  <select
-                    name="status"
-                    value={formData.status}
-                    onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm bg-white focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                  >
-                    {statusOptions.map(status => (
-                      <option key={status} value={status}>{status}</option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Priority
-                  </label>
-                  <div className="flex space-x-2">
-                    {priorityOptions.map(priority => (
-                      <button
-                        key={priority}
-                        type="button"
-                        onClick={() => setFormData(prev => ({ ...prev, priority }))}
-                        className={`px-3 py-2 rounded-md text-sm font-medium border transition-colors ${
-                          formData.priority === priority
-                            ? getPriorityColor(priority)
-                            : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
-                        }`}
-                      >
-                        {priority}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              {/* Notes */}
+      {/* Body - Made scrollable */}
+      <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-3 sm:py-4">
+        {loading ? (
+          <div className="flex items-center justify-center py-8">
+            <div className="animate-spin rounded-full h-6 w-6 sm:h-8 sm:w-8 border-b-2 border-blue-600"></div>
+            <span className="ml-2 text-sm sm:text-base text-gray-600">Loading patient data...</span>
+          </div>
+        ) : (
+          <div className="space-y-4 sm:space-y-6">
+            {/* Appointment Date and Time */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Notes
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1.5 sm:mb-2">
+                  <Calendar className="inline w-3 h-3 sm:w-4 sm:h-4 mr-1" />
+                  Appointment Date *
                 </label>
-                <textarea
-                  name="notes"
-                  value={formData.notes}
+                <input
+                  type="date"
+                  name="appointmentDate"
+                  value={formData.appointmentDate}
                   onChange={handleInputChange}
-                  rows={3}
-                  maxLength="500"
                   className={`w-full px-3 py-2 border rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 ${
-                    errors.notes ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                    errors.appointmentDate ? 'border-red-300 bg-red-50' : 'border-gray-300'
                   }`}
-                  placeholder="Additional notes..."
                 />
-                {errors.notes && (
-                  <p className="text-red-600 text-sm mt-1 flex items-center">
-                    <AlertCircle className="w-4 h-4 mr-1" />
-                    {errors.notes}
+                {errors.appointmentDate && (
+                  <p className="text-red-600 text-xs sm:text-sm mt-1 flex items-center">
+                    <AlertCircle className="w-3 h-3 sm:w-4 sm:h-4 mr-1 flex-shrink-0" />
+                    <span className="truncate">{errors.appointmentDate}</span>
+                  </p>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1.5 sm:mb-2">
+                  <Clock className="inline w-3 h-3 sm:w-4 sm:h-4 mr-1" />
+                  Appointment Time *
+                </label>
+                <input
+                  type="time"
+                  name="appointmentTime"
+                  value={formData.appointmentTime}
+                  onChange={handleInputChange}
+                  min="00:00"
+                  max="24:00"
+                  step="900"
+                  className={`w-full px-3 py-2 border rounded-md text-sm bg-white focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 ${
+                    errors.appointmentTime ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                  }`}
+                />
+                {errors.appointmentTime && (
+                  <p className="text-red-600 text-xs sm:text-sm mt-1 flex items-center">
+                    <AlertCircle className="w-3 h-3 sm:w-4 sm:h-4 mr-1 flex-shrink-0" />
+                    <span className="truncate">{errors.appointmentTime}</span>
+                  </p>
+                )}
+              </div>
+            </div>
+
+            {/* Treatment and Doctor */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+              <div>
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1.5 sm:mb-2">
+                  <Stethoscope className="inline w-3 h-3 sm:w-4 sm:h-4 mr-1" />
+                  Treatment *
+                </label>
+                <input
+                  type="text"
+                  name="treatment"
+                  value={formData.treatment}
+                  onChange={handleInputChange}
+                  list="treatments"
+                  maxLength="100"
+                  className={`w-full px-3 py-2 border rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 ${
+                    errors.treatment ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                  }`}
+                  placeholder="Enter treatment"
+                />
+                <datalist id="treatments">
+                  {availableTreatments.map(treatment => (
+                    <option key={treatment} value={treatment} />
+                  ))}
+                </datalist>
+                {errors.treatment && (
+                  <p className="text-red-600 text-xs sm:text-sm mt-1 flex items-center">
+                    <AlertCircle className="w-3 h-3 sm:w-4 sm:h-4 mr-1 flex-shrink-0" />
+                    <span className="truncate">{errors.treatment}</span>
                   </p>
                 )}
                 <p className="text-xs text-gray-500 mt-1">
-                  {formData.notes.length}/500 characters
+                  {formData.treatment.length}/100 characters
                 </p>
               </div>
 
-              {/* Custom Fields */}
               <div>
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-base font-medium text-gray-900">Custom Fields</h3>
-                  <button
-                    type="button"
-                    onClick={() => setIsPopupOpen(true)}
-                    className="flex items-center px-3 py-1.5 text-sm text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-md"
-                  >
-                    <Plus size={16} className="mr-1" />
-                    Add Field
-                  </button>
-                </div>
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1.5 sm:mb-2">
+                  <User className="inline w-3 h-3 sm:w-4 sm:h-4 mr-1" />
+                  Doctor
+                </label>
+                <input
+                  type="text"
+                  name="doctor"
+                  value={formData.doctor}
+                  onChange={handleInputChange}
+                  list="doctors"
+                  maxLength="50"
+                  className={`w-full px-3 py-2 border rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 ${
+                    errors.doctor ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                  }`}
+                  placeholder="Enter doctor name"
+                />
+                <datalist id="doctors">
+                  {availableDoctors.map(doctor => (
+                    <option key={doctor} value={doctor} />
+                  ))}
+                </datalist>
+                {errors.doctor && (
+                  <p className="text-red-600 text-xs sm:text-sm mt-1 flex items-center">
+                    <AlertCircle className="w-3 h-3 sm:w-4 sm:h-4 mr-1 flex-shrink-0" />
+                    <span className="truncate">{errors.doctor}</span>
+                  </p>
+                )}
+                <p className="text-xs text-gray-500 mt-1">
+                  {formData.doctor.length}/50 characters
+                </p>
+              </div>
+            </div>
 
-                {formData.customFields.map((field, index) => (
-                  <div key={index} className="mb-4">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      {field.label}
-                    </label>
-                    <div className="flex items-center space-x-2">
-                      {field.type === 'textarea' ? (
-                        <textarea
-                          value={field.value || ''}
-                          onChange={(e) => handleCustomFieldChange(index, e.target.value)}
-                          className={`flex-grow px-3 py-2 border rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 ${
-                            errors[`customField_${index}`] ? 'border-red-300 bg-red-50' : 'border-gray-300'
-                          }`}
-                          rows="3"
-                        />
-                      ) : (
-                        <input
-                          type={field.type || 'text'}
-                          value={field.value || ''}
-                          onChange={(e) => handleCustomFieldChange(index, e.target.value)}
-                          className={`flex-grow px-3 py-2 border rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 ${
-                            errors[`customField_${index}`] ? 'border-red-300 bg-red-50' : 'border-gray-300'
-                          }`}
-                        />
-                      )}
-                      <button
-                        type="button"
-                        onClick={() => handleEditCustomField(index)}
-                        className="p-2 text-blue-600 hover:text-blue-700"
-                      >
-                        <Edit size={16} />
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveCustomField(index)}
-                        className="p-2 text-red-600 hover:text-red-700"
-                      >
-                        <Trash2 size={16} />
-                      </button>
-                    </div>
-                    {errors[`customField_${index}`] && (
-                      <p className="text-red-600 text-sm mt-1 flex items-center">
-                        <AlertCircle className="w-4 h-4 mr-1" />
-                        {errors[`customField_${index}`]}
-                      </p>
-                    )}
-                  </div>
-                ))}
+            {/* Status and Priority */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+              <div>
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1.5 sm:mb-2">
+                  Status
+                </label>
+                <select
+                  name="status"
+                  value={formData.status}
+                  onChange={handleInputChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm bg-white focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                >
+                  {statusOptions.map(status => (
+                    <option key={status} value={status}>{status}</option>
+                  ))}
+                </select>
+              </div>
 
-                {/* Add new doctor/treatment buttons */}
-                <div className="mt-6 pt-4 border-t border-gray-200">
-                  <h4 className="text-sm font-medium text-gray-700 mb-3">Quick Actions</h4>
-                  <div className="flex flex-wrap gap-2">
+              <div>
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1.5 sm:mb-2">
+                  Priority
+                </label>
+                <div className="flex space-x-1.5 sm:space-x-2">
+                  {priorityOptions.map(priority => (
                     <button
+                      key={priority}
                       type="button"
-                      onClick={handleAddNewDoctor}
-                      className="flex items-center px-3 py-2 text-sm text-green-600 border border-green-300 rounded-md hover:bg-green-50"
+                      onClick={() => setFormData(prev => ({ ...prev, priority }))}
+                      className={`flex-1 px-2 sm:px-3 py-2 rounded-md text-xs sm:text-sm font-medium border transition-colors ${
+                        formData.priority === priority
+                          ? getPriorityColor(priority)
+                          : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                      }`}
                     >
-                      <Plus size={14} className="mr-1" />
-                      Add New Doctor
+                      {priority}
                     </button>
-                    
-                    <button
-                      type="button"
-                      onClick={handleAddNewTreatment}
-                      className="flex items-center px-3 py-2 text-sm text-purple-600 border border-purple-300 rounded-md hover:bg-purple-50"
-                    >
-                      <Plus size={14} className="mr-1" />
-                      Add New Treatment
-                    </button>
-                  </div>
-                  
-                  <div className="mt-3 text-xs text-gray-500">
-                    Available: {availableDoctors.length} doctors, {availableTreatments.length} treatments
-                  </div>
+                  ))}
                 </div>
               </div>
             </div>
-          )}
-        </div>
 
-        {/* Footer - Fixed at bottom */}
-        <div className="px-6 py-4 bg-gray-50 border-t border-gray-200 flex-shrink-0">
-          <div className="flex justify-end space-x-3">
-            <button
-              onClick={onClose}
-              disabled={saving}
-              className="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50 text-sm font-medium disabled:opacity-50"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={handleSaveDraft}
-              disabled={saving}
-              className="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50 text-sm font-medium disabled:opacity-50 flex items-center"
-            >
-              <Save className="w-4 h-4 mr-2" />
-              Save Draft
-            </button>
-            <button
-              onClick={handleSubmit}
-              disabled={saving || loading || Object.keys(errors).length > 0}
-              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm font-medium disabled:opacity-50 flex items-center"
-            >
-              {saving ? (
-                <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                  {mode === 'edit' ? 'Updating...' : 'Creating...'}
-                </>
-              ) : (
-                <>
-                  <CheckCircle className="w-4 h-4 mr-2" />
-                  {mode === 'edit' ? 'Update Appointment' : 'Create Appointment'}
-                </>
+            {/* Notes */}
+            <div>
+              <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1.5 sm:mb-2">
+                Notes
+              </label>
+              <textarea
+                name="notes"
+                value={formData.notes}
+                onChange={handleInputChange}
+                rows={3}
+                maxLength="500"
+                className={`w-full px-3 py-2 border rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 ${
+                  errors.notes ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                }`}
+                placeholder="Additional notes..."
+              />
+              {errors.notes && (
+                <p className="text-red-600 text-xs sm:text-sm mt-1 flex items-center">
+                  <AlertCircle className="w-3 h-3 sm:w-4 sm:h-4 mr-1 flex-shrink-0" />
+                  <span>{errors.notes}</span>
+                </p>
               )}
-            </button>
+              <p className="text-xs text-gray-500 mt-1">
+                {formData.notes.length}/500 characters
+              </p>
+            </div>
+
+            {/* Custom Fields */}
+            <div>
+              <div className="flex items-center justify-between mb-3 sm:mb-4">
+                <h3 className="text-sm sm:text-base font-medium text-gray-900">Custom Fields</h3>
+                <button
+                  type="button"
+                  onClick={() => setIsPopupOpen(true)}
+                  className="flex items-center px-2.5 sm:px-3 py-1.5 text-xs sm:text-sm text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-md"
+                >
+                  <Plus size={14} className="sm:w-4 sm:h-4 mr-1" />
+                  Add Field
+                </button>
+              </div>
+
+              {formData.customFields.map((field, index) => (
+                <div key={index} className="mb-3 sm:mb-4">
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1.5 sm:mb-2">
+                    {field.label}
+                  </label>
+                  <div className="flex items-center space-x-2">
+                    {field.type === 'textarea' ? (
+                      <textarea
+                        value={field.value || ''}
+                        onChange={(e) => handleCustomFieldChange(index, e.target.value)}
+                        className={`flex-grow px-3 py-2 border rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 ${
+                          errors[`customField_${index}`] ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                        }`}
+                        rows="3"
+                      />
+                    ) : (
+                      <input
+                        type={field.type || 'text'}
+                        value={field.value || ''}
+                        onChange={(e) => handleCustomFieldChange(index, e.target.value)}
+                        className={`flex-grow px-3 py-2 border rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 ${
+                          errors[`customField_${index}`] ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                        }`}
+                      />
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => handleEditCustomField(index)}
+                      className="p-2 text-blue-600 hover:text-blue-700 flex-shrink-0"
+                    >
+                      <Edit size={14} className="sm:w-4 sm:h-4" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveCustomField(index)}
+                      className="p-2 text-red-600 hover:text-red-700 flex-shrink-0"
+                    >
+                      <Trash2 size={14} className="sm:w-4 sm:h-4" />
+                    </button>
+                  </div>
+                  {errors[`customField_${index}`] && (
+                    <p className="text-red-600 text-xs sm:text-sm mt-1 flex items-center">
+                      <AlertCircle className="w-3 h-3 sm:w-4 sm:h-4 mr-1 flex-shrink-0" />
+                      <span>{errors[`customField_${index}`]}</span>
+                    </p>
+                  )}
+                </div>
+              ))}
+
+              {/* Add new doctor/treatment buttons */}
+              <div className="mt-4 sm:mt-6 pt-3 sm:pt-4 border-t border-gray-200">
+                <h4 className="text-xs sm:text-sm font-medium text-gray-700 mb-2 sm:mb-3">Quick Actions</h4>
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    onClick={handleAddNewDoctor}
+                    className="flex items-center px-2.5 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm text-green-600 border border-green-300 rounded-md hover:bg-green-50"
+                  >
+                    <Plus size={12} className="sm:w-3.5 sm:h-3.5 mr-1" />
+                    Add New Doctor
+                  </button>
+                  
+                  <button
+                    type="button"
+                    onClick={handleAddNewTreatment}
+                    className="flex items-center px-2.5 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm text-purple-600 border border-purple-300 rounded-md hover:bg-purple-50"
+                  >
+                    <Plus size={12} className="sm:w-3.5 sm:h-3.5 mr-1" />
+                    Add New Treatment
+                  </button>
+                </div>
+                
+                <div className="mt-2 sm:mt-3 text-xs text-gray-500">
+                  Available: {availableDoctors.length} doctors, {availableTreatments.length} treatments
+                </div>
+              </div>
+            </div>
           </div>
+        )}
+      </div>
+
+      {/* Footer - Fixed at bottom */}
+      <div className="px-4 sm:px-6 py-3 sm:py-4 bg-gray-50 border-t border-gray-200 flex-shrink-0">
+        <div className="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-3">
+          <button
+            onClick={onClose}
+            disabled={saving}
+            className="w-full sm:w-auto px-3 sm:px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50 text-xs sm:text-sm font-medium disabled:opacity-50"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleSaveDraft}
+            disabled={saving}
+            className="w-full sm:w-auto px-3 sm:px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50 text-xs sm:text-sm font-medium disabled:opacity-50 flex items-center justify-center"
+          >
+            <Save className="w-3 h-3 sm:w-4 sm:h-4 mr-2" />
+            Save Draft
+          </button>
+          <button
+            onClick={handleSubmit}
+            disabled={saving || loading || Object.keys(errors).length > 0}
+            className="w-full sm:w-auto px-3 sm:px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-xs sm:text-sm font-medium disabled:opacity-50 flex items-center justify-center"
+          >
+            {saving ? (
+              <>
+                <div className="animate-spin rounded-full h-3 w-3 sm:h-4 sm:w-4 border-b-2 border-white mr-2"></div>
+                {mode === 'edit' ? 'Updating...' : 'Creating...'}
+              </>
+            ) : (
+              <>
+                <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4 mr-2" />
+                {mode === 'edit' ? 'Update Appointment' : 'Create Appointment'}
+              </>
+            )}
+          </button>
         </div>
       </div>
     </div>
-  );
+  </div>
+);
 };
 
 export default AddAppointmentModal;

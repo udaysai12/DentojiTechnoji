@@ -64,7 +64,7 @@ export default function FinanceTable() {
     <div className="bg-white shadow rounded-lg p-4">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-lg font-semibold">Patient Financial Overview</h2>
-        <button className="bg-gray-100 text-gray-800 px-5 py-2 rounded-lg cursor-pointer text-sm flex items-center gap-2 mr-20">
+        <button className="bg-gray-100 text-gray-800 px-5 py-2 rounded-lg cursor-pointer text-sm flex items-center gap-2 mr-5">
           <Upload size={16} />
           Export
         </button>

@@ -697,115 +697,114 @@ const formatFeatures = (features) => {
         );
     }
 
-    return (
-        <div className="p-6 bg-gray-100 min-h-screen">
-            {/* Header */}
-            <div className="bg-white shadow-sm rounded-lg mb-6">
-                <div className="flex items-center justify-between p-6">
-                    <div className="flex items-center gap-3">
-                        <ArrowLeft
-                            size={20}
-                            className="text-gray-600 cursor-pointer hover:text-gray-800 transition-colors"
-                            onClick={handleBackClick}
-                        />
-                        <div>
-                            <h1 className="text-xl font-semibold text-gray-900">Doctor Profile</h1>
-                            <p className="text-sm text-gray-500 mt-1">
-                                Manage your professional information • Role: {userRole}
-                            </p>
-                        </div>
-                    </div>
-                    <div className="flex items-center gap-3">
-                        {renderEditButton()}
+return (
+    <div className="p-3 sm:p-6 bg-gray-100 min-h-screen">
+        {/* Header */}
+        <div className="bg-white shadow-sm rounded-lg mb-4 sm:mb-6">
+            <div className="flex items-center justify-between p-4 sm:p-6">
+                <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
+                    <ArrowLeft
+                        size={18}
+                        className="text-gray-600 cursor-pointer hover:text-gray-800 transition-colors flex-shrink-0 sm:w-5 sm:h-5"
+                        onClick={handleBackClick}
+                    />
+                    <div className="min-w-0 flex-1">
+                        <h1 className="text-lg sm:text-xl font-semibold text-gray-900 truncate">Doctor Profile</h1>
+                        <p className="text-xs sm:text-sm text-gray-500 mt-0.5 sm:mt-1 truncate">
+                            Manage your professional information • Role: {userRole}
+                        </p>
                     </div>
                 </div>
-
-                {/* Tabs */}
-                <div className="border-b border-gray-200 bg-gray-50">
-                    <div className="flex justify-between items-start mx-auto w-full">
-                        <button
-                            onClick={() => setActiveTab("Overview")}
-                            className={`px-6 py-3 text-sm font-medium transition-colors relative ml-10 cursor-pointer ${
-                                activeTab === "Overview"
-                                    ? "text-blue-600"
-                                    : "text-gray-600 hover:text-gray-800"
-                            }`}
-                        >
-                            Overview
-                            {activeTab === "Overview" && (
-                                <span className="absolute bottom-0 left-0 w-full h-0.5 bg-blue-600"></span>
-                            )}
-                        </button>
-
-                        <button
-                            onClick={() => setActiveTab("Personal Info")}
-                            className={`px-6 py-3 text-sm font-medium transition-colors relative cursor-pointer ${
-                                activeTab === "Personal Info"
-                                    ? "text-blue-600"
-                                    : "text-gray-600 hover:text-gray-800"
-                            }`}
-                        >
-                            Personal Info
-                            {activeTab === "Personal Info" && (
-                                <span className="absolute bottom-0 left-0 w-full h-0.5 bg-blue-600"></span>
-                            )}
-                        </button>
-
-                        <button
-                            onClick={() => setActiveTab("Subscription")}
-                            className={`px-6 py-3 text-sm font-medium transition-colors relative mr-10 cursor-pointer ${
-                                activeTab === "Subscription"
-                                    ? "text-blue-600"
-                                    : "text-gray-600 hover:text-gray-800"
-                            }`}
-                        >
-                            Subscription
-                            {activeTab === "Subscription" && (
-                                <span className="absolute bottom-0 left-0 w-full h-0.5 bg-blue-600"></span>
-                            )}
-                        </button>
-                    </div>
+                <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0 ml-2">
+                    {renderEditButton()}
                 </div>
             </div>
 
-            {/* Content */}
-            <div>
-                {activeTab === "Overview" && (
-                    <OverviewTab 
-                        navigate={handleNavigate} 
-                        formData={formData} 
-                        hospitalData={hospitalData}
-                        profileImagePreview={profileImagePreview}
-                        imageLoadError={imageLoadError}
-                        handleImageError={handleImageError}
-                        handleImageLoad={handleImageLoad}
-                    />
-                )}
-                {activeTab === "Personal Info" && (
-                    <PersonalInfoTab
-                        formData={formData}
-                        handleInputChange={handleInputChange}
-                        isEditing={isEditing}
-                        profileImagePreview={profileImagePreview}
-                        handleFileSelect={handleFileSelect}
-                        handleDeleteImage={handleDeleteImage}
-                        uploadingImage={uploadingImage}
-                        fileInputRef={fileInputRef}
-                        imageLoadError={imageLoadError}
-                        handleImageError={handleImageError}
-                        handleImageLoad={handleImageLoad}
-                    />
-                )}
-                {activeTab === "Subscription" && (
-                    <SubscriptionTab 
-                        subscriptionData={subscriptionData}
-                        navigate={handleNavigate}
-                    />
-                )}
+            {/* Tabs */}
+            <div className="border-b border-gray-200 bg-gray-50 overflow-x-auto">
+                <div className="flex justify-between items-start mx-auto w-full min-w-max sm:min-w-0">
+                    <button
+                        onClick={() => setActiveTab("Overview")}
+                        className={`px-4 sm:px-6 py-2.5 sm:py-3 text-xs sm:text-sm font-medium transition-colors relative ml-4 sm:ml-10 cursor-pointer whitespace-nowrap ${
+                            activeTab === "Overview"
+                                ? "text-blue-600"
+                                : "text-gray-600 hover:text-gray-800"
+                        }`}
+                    >
+                        Overview
+                        {activeTab === "Overview" && (
+                            <span className="absolute bottom-0 left-0 w-full h-0.5 bg-blue-600"></span>
+                        )}
+                    </button>
+
+                    <button
+                        onClick={() => setActiveTab("Personal Info")}
+                        className={`px-4 sm:px-6 py-2.5 sm:py-3 text-xs sm:text-sm font-medium transition-colors relative cursor-pointer whitespace-nowrap ${
+                            activeTab === "Personal Info"
+                                ? "text-blue-600"
+                                : "text-gray-600 hover:text-gray-800"
+                        }`}
+                    >
+                        Personal Info
+                        {activeTab === "Personal Info" && (
+                            <span className="absolute bottom-0 left-0 w-full h-0.5 bg-blue-600"></span>
+                        )}
+                    </button>
+
+                    <button
+                        onClick={() => setActiveTab("Subscription")}
+                        className={`px-4 sm:px-6 py-2.5 sm:py-3 text-xs sm:text-sm font-medium transition-colors relative mr-4 sm:mr-10 cursor-pointer whitespace-nowrap ${
+                            activeTab === "Subscription"
+                                ? "text-blue-600"
+                                : "text-gray-600 hover:text-gray-800"
+                        }`}
+                    >
+                        Subscription
+                        {activeTab === "Subscription" && (
+                            <span className="absolute bottom-0 left-0 w-full h-0.5 bg-blue-600"></span>
+                        )}
+                    </button>
+                </div>
             </div>
         </div>
-    );
-}
+
+        {/* Content */}
+        <div>
+            {activeTab === "Overview" && (
+                <OverviewTab 
+                    navigate={handleNavigate} 
+                    formData={formData} 
+                    hospitalData={hospitalData}
+                    profileImagePreview={profileImagePreview}
+                    imageLoadError={imageLoadError}
+                    handleImageError={handleImageError}
+                    handleImageLoad={handleImageLoad}
+                />
+            )}
+            {activeTab === "Personal Info" && (
+                <PersonalInfoTab
+                    formData={formData}
+                    handleInputChange={handleInputChange}
+                    isEditing={isEditing}
+                    profileImagePreview={profileImagePreview}
+                    handleFileSelect={handleFileSelect}
+                    handleDeleteImage={handleDeleteImage}
+                    uploadingImage={uploadingImage}
+                    fileInputRef={fileInputRef}
+                    imageLoadError={imageLoadError}
+                    handleImageError={handleImageError}
+                    handleImageLoad={handleImageLoad}
+                />
+            )}
+            {activeTab === "Subscription" && (
+                <SubscriptionTab 
+                    subscriptionData={subscriptionData}
+                    navigate={handleNavigate}
+                />
+            )}
+        </div>
+    </div>
+);
 
 function OverviewTab({ navigate, formData, hospitalData, profileImagePreview, imageLoadError, handleImageError, handleImageLoad }) {
     const getInitials = (name) => {
@@ -816,9 +815,9 @@ function OverviewTab({ navigate, formData, hospitalData, profileImagePreview, im
     return (
         <div>
             {/* Doctor Card */}
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-                <div className="flex items-start gap-4">
-                    <div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center text-xl font-bold text-blue-600 flex-shrink-0 overflow-hidden relative">
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6 mb-4 sm:mb-6">
+                <div className="flex flex-col sm:flex-row items-start gap-3 sm:gap-4">
+                    <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-blue-100 flex items-center justify-center text-lg sm:text-xl font-bold text-blue-600 flex-shrink-0 overflow-hidden relative">
                         {profileImagePreview && !imageLoadError && (
                             <img 
                                 src={profileImagePreview} 
@@ -832,37 +831,37 @@ function OverviewTab({ navigate, formData, hospitalData, profileImagePreview, im
                             {getInitials(formData.name)}
                         </div>
                     </div>
-                    <div className="flex-1">
-                        <div className="flex items-start justify-between">
-                            <div>
-                                <h2 className="text-xl font-semibold text-gray-900 mb-1">
+                    <div className="flex-1 w-full min-w-0">
+                        <div className="flex flex-col sm:flex-row items-start sm:justify-between gap-2 sm:gap-0">
+                            <div className="min-w-0 flex-1">
+                                <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-1 truncate">
                                     {formData.name || "User Name"}
                                 </h2>
-                                <p className="text-gray-600 mb-1">
+                                <p className="text-sm sm:text-base text-gray-600 mb-1 truncate">
                                     {formData.specialization || "General Practice"}
                                 </p>
-                                <p className="text-gray-500 text-sm">{formData.email}</p>
+                                <p className="text-xs sm:text-sm text-gray-500 break-all">{formData.email}</p>
                                 {formData.qualification && (
-                                    <p className="text-gray-500 text-sm mt-1">
+                                    <p className="text-xs sm:text-sm text-gray-500 mt-1">
                                         {formData.qualification}
                                     </p>
                                 )}
                                 {formData.phone && (
-                                    <p className="text-gray-500 text-sm mt-1">
+                                    <p className="text-xs sm:text-sm text-gray-500 mt-1">
                                         📞 {formData.phone}
                                     </p>
                                 )}
                                 {formData.location && (
-                                    <p className="text-gray-500 text-sm mt-1">
+                                    <p className="text-xs sm:text-sm text-gray-500 mt-1 truncate">
                                         📍 {formData.location}
                                     </p>
                                 )}
                             </div>
-                            <span className="px-3 py-1 text-xs bg-green-100 text-green-700 rounded-full font-medium">
+                            <span className="px-2.5 sm:px-3 py-1 text-xs bg-green-100 text-green-700 rounded-full font-medium whitespace-nowrap flex-shrink-0">
                                 {formData.role} Member
                             </span>
                         </div>
-                        <p className="mt-4 text-gray-600 leading-relaxed">
+                        <p className="mt-3 sm:mt-4 text-sm sm:text-base text-gray-600 leading-relaxed">
                             {formData.bio || "No bio available. Click 'Edit Profile' to add your professional information."}
                         </p>
                     </div>
@@ -870,26 +869,26 @@ function OverviewTab({ navigate, formData, hospitalData, profileImagePreview, im
             </div>
 
             {/* Quick Actions */}
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                <h3 className="text-lg font-medium text-gray-900 mb-4">Quick Actions</h3>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6">
+                <h3 className="text-base sm:text-lg font-medium text-gray-900 mb-3 sm:mb-4">Quick Actions</h3>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
                     <ActionCard
-                        icon={<UserPlus size={24} />}
+                        icon={<UserPlus size={20} className="sm:w-6 sm:h-6" />}
                         label="Add New Patient"
                         onClick={() => navigate("/addpatient")}
                     />
                     <ActionCard
-                        icon={<Calendar size={24} />}
+                        icon={<Calendar size={20} className="sm:w-6 sm:h-6" />}
                         label="View Appointments"
                         onClick={() => navigate("/appointments")}
                     />
                     <ActionCard
-                        icon={<Users size={24} />}
+                        icon={<Users size={20} className="sm:w-6 sm:h-6" />}
                         label="Manage Staff"
                         onClick={() => navigate("/staff")}
                     />
                     <ActionCard
-                        icon={<Gift size={24} />}
+                        icon={<Gift size={20} className="sm:w-6 sm:h-6" />}
                         label="Refers & Earn"
                         onClick={() => navigate("/share")}
                     />
@@ -919,13 +918,13 @@ function PersonalInfoTab({
 
     return (
         <div className="flex justify-center">
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 w-full">
-                <h3 className="text-lg font-medium text-gray-900 mb-6">Personal Information</h3>
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6 w-full">
+                <h3 className="text-base sm:text-lg font-medium text-gray-900 mb-4 sm:mb-6">Personal Information</h3>
                 
                 {/* Profile Image Section */}
-                <div className="flex flex-col items-center mb-8">
+                <div className="flex flex-col items-center mb-6 sm:mb-8">
                     <div className="relative">
-                        <div className="w-24 h-24 rounded-full bg-blue-100 flex items-center justify-center text-2xl font-bold text-blue-600 overflow-hidden border-4 border-white shadow-lg relative">
+                        <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-blue-100 flex items-center justify-center text-xl sm:text-2xl font-bold text-blue-600 overflow-hidden border-4 border-white shadow-lg relative">
                             {profileImagePreview && !imageLoadError && (
                                 <img 
                                     src={profileImagePreview} 
@@ -944,26 +943,26 @@ function PersonalInfoTab({
                             <button
                                 onClick={() => fileInputRef.current?.click()}
                                 disabled={uploadingImage}
-                                className="absolute bottom-0 right-0 bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-full shadow-lg transition-colors disabled:opacity-50"
+                                className="absolute bottom-0 right-0 bg-blue-500 hover:bg-blue-600 text-white p-1.5 sm:p-2 rounded-full shadow-lg transition-colors disabled:opacity-50"
                                 title="Upload new image"
                             >
                                 {uploadingImage ? (
-                                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                    <div className="w-3 h-3 sm:w-4 sm:h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                                 ) : (
-                                    <Camera size={16} />
+                                    <Camera size={14} className="sm:w-4 sm:h-4" />
                                 )}
                             </button>
                         )}
                     </div>
                     
                     {isEditing && (
-                        <div className="flex gap-2 mt-4">
+                        <div className="flex gap-2 mt-3 sm:mt-4">
                             <button
                                 onClick={() => fileInputRef.current?.click()}
                                 disabled={uploadingImage}
-                                className="flex items-center gap-2 px-3 py-2 text-sm bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors disabled:opacity-50"
+                                className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors disabled:opacity-50"
                             >
-                                <Upload size={14} />
+                                <Upload size={12} className="sm:w-3.5 sm:h-3.5" />
                                 Upload Image
                             </button>
                             
@@ -971,9 +970,9 @@ function PersonalInfoTab({
                                 <button
                                     onClick={handleDeleteImage}
                                     disabled={uploadingImage}
-                                    className="flex items-center gap-2 px-3 py-2 text-sm bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors disabled:opacity-50"
+                                    className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors disabled:opacity-50"
                                 >
-                                    <Trash2 size={14} />
+                                    <Trash2 size={12} className="sm:w-3.5 sm:h-3.5" />
                                     Remove
                                 </button>
                             )}
@@ -989,7 +988,7 @@ function PersonalInfoTab({
                     />
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                     {[
                         { label: "Full Name", name: "name", placeholder: "e.g. Dr. John Smith" },
                         { label: "Email", name: "email", placeholder: "e.g. john.smith@email.com", disabled: true },
@@ -999,7 +998,7 @@ function PersonalInfoTab({
                         { label: "Location", name: "location", placeholder: "e.g. City, State" },
                     ].map((field) => (
                         <div key={field.name}>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                            <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1.5 sm:mb-2">
                                 {field.label}
                                 {field.disabled && <span className="text-gray-400 ml-1">(Read-only)</span>}
                             </label>
@@ -1010,7 +1009,7 @@ function PersonalInfoTab({
                                 onChange={handleInputChange}
                                 placeholder={field.placeholder}
                                 disabled={!isEditing || field.disabled}
-                                className={`w-full border rounded-lg px-3 py-2.5 text-sm transition-colors ${
+                                className={`w-full border rounded-lg px-3 py-2 sm:py-2.5 text-xs sm:text-sm transition-colors ${
                                     isEditing && !field.disabled
                                         ? "bg-white border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
                                         : "bg-gray-50 border-gray-200 text-gray-600"
@@ -1019,7 +1018,7 @@ function PersonalInfoTab({
                         </div>
                     ))}
                     <div className="sm:col-span-2">
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Bio</label>
+                        <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1.5 sm:mb-2">Bio</label>
                         <textarea
                             name="bio"
                             value={formData.bio || ""}
@@ -1027,7 +1026,7 @@ function PersonalInfoTab({
                             placeholder="Tell us about yourself and your practice..."
                             disabled={!isEditing}
                             rows={4}
-                            className={`w-full border rounded-lg px-3 py-2.5 text-sm transition-colors resize-none ${
+                            className={`w-full border rounded-lg px-3 py-2 sm:py-2.5 text-xs sm:text-sm transition-colors resize-none ${
                                 isEditing
                                     ? "bg-white border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
                                     : "bg-gray-50 border-gray-200 text-gray-600"
@@ -1035,14 +1034,11 @@ function PersonalInfoTab({
                         />
                     </div>
                 </div>
-           
             </div>
         </div>
     );
 }
 
-
-// 3. UPDATE: SubscriptionTab component - Enhanced with real data handling
 function SubscriptionTab({ subscriptionData, navigate }) {
     const getStatusColor = (status) => {
         switch (status?.toLowerCase()) {
@@ -1060,13 +1056,13 @@ function SubscriptionTab({ subscriptionData, navigate }) {
     const getStatusIcon = (status) => {
         switch (status?.toLowerCase()) {
             case 'active':
-                return <CheckCircle className="w-5 h-5 text-green-600" />;
+                return <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-green-600" />;
             case 'trial':
-                return <Clock className="w-5 h-5 text-blue-600" />;
+                return <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" />;
             case 'expired':
-                return <X className="w-5 h-5 text-red-600" />;
+                return <X className="w-4 h-4 sm:w-5 sm:h-5 text-red-600" />;
             default:
-                return <Clock className="w-5 h-5 text-gray-600" />;
+                return <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />;
         }
     };
 
@@ -1082,17 +1078,17 @@ function SubscriptionTab({ subscriptionData, navigate }) {
     if (!subscriptionData) {
         return (
             <div className="flex justify-center">
-                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 w-full max-w-2xl text-center">
-                    <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <Crown className="w-8 h-8 text-gray-400" />
+                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 sm:p-8 w-full max-w-2xl text-center">
+                    <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
+                        <Crown className="w-6 h-6 sm:w-8 sm:h-8 text-gray-400" />
                     </div>
-                    <h3 className="text-xl font-semibold text-gray-900 mb-2">No Active Subscription</h3>
-                    <p className="text-gray-600 mb-6">
+                    <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2">No Active Subscription</h3>
+                    <p className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6 px-4">
                         Subscribe to unlock advanced features and grow your practice with powerful tools.
                     </p>
                     <button
                         onClick={() => navigate('/pricing')}
-                        className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+                        className="bg-blue-500 hover:bg-blue-600 text-white px-5 sm:px-6 py-2.5 sm:py-3 rounded-lg font-medium transition-colors text-sm sm:text-base"
                     >
                         View Pricing Plans
                     </button>
@@ -1108,55 +1104,55 @@ function SubscriptionTab({ subscriptionData, navigate }) {
         : (subscriptionData.daysLeft / 365) * 100;
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6">
             {/* Current Plan Card */}
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                <div className="flex items-center justify-between mb-6">
-                    <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-                            <Crown className="w-6 h-6 text-purple-600" />
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 sm:mb-6 gap-3 sm:gap-0">
+                    <div className="flex items-center gap-2.5 sm:gap-3">
+                        <div className="w-10 h-10 sm:w-12 sm:h-12 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                            <Crown className="w-5 h-5 sm:w-6 sm:h-6 text-purple-600" />
                         </div>
                         <div>
-                            <h3 className="text-lg font-semibold text-gray-900">Current Subscription</h3>
-                            <p className="text-sm text-gray-600">Your active plan details</p>
+                            <h3 className="text-base sm:text-lg font-semibold text-gray-900">Current Subscription</h3>
+                            <p className="text-xs sm:text-sm text-gray-600">Your active plan details</p>
                         </div>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 self-start sm:self-auto">
                         {getStatusIcon(subscriptionData.status)}
-                        <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(subscriptionData.status)}`}>
+                        <span className={`px-2.5 sm:px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(subscriptionData.status)}`}>
                             {subscriptionData.status === 'active' ? 'Active' : 
                              subscriptionData.status === 'trial' ? 'Free Trial' : 'Expired'}
                         </span>
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div className="text-center p-4 bg-gray-50 rounded-lg">
-                        <div className="text-2xl font-bold text-gray-900">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-6">
+                    <div className="text-center p-3 sm:p-4 bg-gray-50 rounded-lg">
+                        <div className="text-lg sm:text-2xl font-bold text-gray-900 break-words">
                             {getPlanDisplayName(subscriptionData.planName)}
                         </div>
-                        <div className="text-sm text-gray-600 mt-1">Current Plan</div>
+                        <div className="text-xs sm:text-sm text-gray-600 mt-1">Current Plan</div>
                     </div>
-                    <div className="text-center p-4 bg-gray-50 rounded-lg">
-                        <div className={`text-2xl font-bold ${subscriptionData.isExpiringSoon ? 'text-orange-600' : 'text-blue-600'}`}>
+                    <div className="text-center p-3 sm:p-4 bg-gray-50 rounded-lg">
+                        <div className={`text-lg sm:text-2xl font-bold ${subscriptionData.isExpiringSoon ? 'text-orange-600' : 'text-blue-600'}`}>
                             {subscriptionData.daysLeft}
                         </div>
-                        <div className="text-sm text-gray-600 mt-1">Days Remaining</div>
+                        <div className="text-xs sm:text-sm text-gray-600 mt-1">Days Remaining</div>
                         {subscriptionData.isExpiringSoon && (
                             <div className="text-xs text-orange-600 mt-1">⚠️ Expiring Soon</div>
                         )}
                     </div>
-                    <div className="text-center p-4 bg-gray-50 rounded-lg">
-                        <div className="text-2xl font-bold text-gray-900">
+                    <div className="text-center p-3 sm:p-4 bg-gray-50 rounded-lg">
+                        <div className="text-lg sm:text-2xl font-bold text-gray-900">
                             {subscriptionData.validUntil}
                         </div>
-                        <div className="text-sm text-gray-600 mt-1">Valid Until</div>
+                        <div className="text-xs sm:text-sm text-gray-600 mt-1">Valid Until</div>
                     </div>
                 </div>
 
                 {/* Progress Bar */}
-                <div className="mt-6">
-                    <div className="flex justify-between text-sm text-gray-600 mb-2">
+                <div className="mt-4 sm:mt-6">
+                    <div className="flex justify-between text-xs sm:text-sm text-gray-600 mb-2">
                         <span>Time Used</span>
                         <span>{Math.round(100 - daysLeftPercentage)}%</span>
                     </div>
@@ -1170,16 +1166,16 @@ function SubscriptionTab({ subscriptionData, navigate }) {
                     </div>
                 </div>
 
-                <div className="mt-6 flex gap-3">
+                <div className="mt-4 sm:mt-6 flex flex-col sm:flex-row gap-2 sm:gap-3">
                     <button
                         onClick={() => navigate('/pricing')}
-                        className="flex-1 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+                        className="flex-1 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2.5 sm:py-2 rounded-lg font-medium transition-colors text-sm sm:text-base"
                     >
                         {subscriptionData.planName === 'Free Trial' ? 'Upgrade Plan' : 'Change Plan'}
                     </button>
                     <button
                         onClick={() => navigate('/billing')}
-                        className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors"
+                        className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2.5 sm:py-2 rounded-lg font-medium transition-colors text-sm sm:text-base"
                     >
                         View Billing
                     </button>
@@ -1187,27 +1183,27 @@ function SubscriptionTab({ subscriptionData, navigate }) {
             </div>
 
             {/* Features Card */}
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                <h4 className="text-lg font-semibold text-gray-900 mb-4">Plan Features</h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6">
+                <h4 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">Plan Features</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
                     {subscriptionData.features && subscriptionData.features.map((feature, index) => (
-                        <div key={index} className="flex items-center gap-3">
-                            <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
-                            <span className="text-gray-700">{feature}</span>
+                        <div key={index} className="flex items-center gap-2 sm:gap-3">
+                            <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-green-500 flex-shrink-0" />
+                            <span className="text-xs sm:text-sm text-gray-700">{feature}</span>
                         </div>
                     ))}
                 </div>
             </div>
 
-            {/* Usage Stats (You can keep this or modify based on your needs) */}
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                <h4 className="text-lg font-semibold text-gray-900 mb-4">Usage Statistics</h4>
-                <p className="text-sm text-gray-600 mb-4">
+            {/* Usage Stats */}
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6">
+                <h4 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">Usage Statistics</h4>
+                <p className="text-xs sm:text-sm text-gray-600 mb-3 sm:mb-4">
                     Track your usage across various features and services
                 </p>
-                <div className="space-y-4">
+                <div className="space-y-3 sm:space-y-4">
                     <div>
-                        <div className="flex justify-between text-sm mb-2">
+                        <div className="flex justify-between text-xs sm:text-sm mb-2">
                             <span className="text-gray-600">Patients Added</span>
                             <span className="text-gray-900 font-medium">View Details</span>
                         </div>
@@ -1216,4 +1212,5 @@ function SubscriptionTab({ subscriptionData, navigate }) {
             </div>
         </div>
     );
+}
 }

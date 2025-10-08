@@ -487,11 +487,11 @@ const PatientTable = () => {
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-base font-semibold">Patient Records</h2>
           <button
-            className="bg-gray-100 text-gray-800 px-5 py-2 rounded-lg cursor-pointer text-sm flex items-center gap-2 mr-20"
+            className="bg-gray-100 text-gray-800 px-5 py-2 rounded-lg cursor-pointer text-sm flex items-center gap-2 mr-5"
             onClick={exportToCSV}
           >
-            <Download size={16} />
-            Export CSV
+            <Upload size={16} />
+            Export 
           </button>
         </div>
 

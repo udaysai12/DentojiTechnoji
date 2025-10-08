@@ -491,170 +491,347 @@ const handleDeleteRow = async (id) => {
     );
   }
 
-  // Main render
-  return (
-    <div className="min-h-screen bg-white">
-      {/* Header */}
-      <div className="bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <button
-                onClick={handleBack}
-                className="flex items-center gap-2 px-3 py-2 text-gray-700 cursor-pointer rounded-md hover:bg-gray-50 transition-colors"
-              >
-                <ArrowLeft className="w-4 h-4" />
-              </button>
-              <h1 className="text-2xl font-semibold text-gray-900">Medications</h1>
-              <span className="text-sm text-gray-500">
+ // Main render
+return (
+  <div className="min-h-screen bg-white">
+    {/* Header */}
+    <div className="bg-white border-b border-gray-200">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 py-3 sm:py-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0">
+          <div className="flex items-center gap-2 sm:gap-4 w-full sm:w-auto">
+            <button
+              onClick={handleBack}
+              className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 sm:py-2 text-gray-700 cursor-pointer rounded-md hover:bg-gray-50 transition-colors flex-shrink-0"
+            >
+              <ArrowLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            </button>
+            <div className="flex-1 min-w-0">
+              <h1 className="text-lg sm:text-2xl font-semibold text-gray-900 truncate">Medications</h1>
+              <span className="text-xs sm:text-sm text-gray-500 block">
                 ({originalMedications.length} existing, {medications.filter(m => m.isNew).length} new)
               </span>
             </div>
+          </div>
 
-            <div className="flex items-center gap-3">
-              {medications.length === 0 && !isEditMode ? (
-                <button
-                  onClick={handleAddRow}
-                  className="flex items-center gap-2 cursor-pointer px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-                >
-                  <Plus className="w-4 h-4" />
-                  Add First Medication
-                </button>
-              ) : (
-                <>
-                  {isEditMode && (
-                    <button
-                      onClick={handleAddRow}
-                      className="flex items-center gap-2 px-3 py-2 border border-green-600 cursor-pointer text-green-600 rounded-md hover:bg-green-50 transition-colors"
-                    >
-                      <Plus className="w-4 h-4" />
-                      Add Row
-                    </button>
-                  )}
+          <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto">
+            {medications.length === 0 && !isEditMode ? (
+              <button
+                onClick={handleAddRow}
+                className="flex items-center justify-center gap-1.5 sm:gap-2 cursor-pointer px-3 sm:px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-xs sm:text-sm flex-1 sm:flex-initial"
+              >
+                <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                <span className="hidden sm:inline">Add First Medication</span>
+                <span className="sm:hidden">Add Medication</span>
+              </button>
+            ) : (
+              <>
+                {isEditMode && (
                   <button
-                    onClick={() => setIsEditMode(!isEditMode)}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-md transition-colors cursor-pointer border ${
-                      isEditMode
-                        ? 'text-orange-600 border-orange-600 hover:bg-orange-50'
-                        : 'text-blue-600 border-blue-600 hover:bg-blue-50'
-                    }`}
+                    onClick={handleAddRow}
+                    className="flex items-center justify-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-2 border border-green-600 cursor-pointer text-green-600 rounded-md hover:bg-green-50 transition-colors text-xs sm:text-sm flex-1 sm:flex-initial"
                   >
-                    {isEditMode ? <X className="w-4 h-4" /> : <Edit3 className="w-4 h-4" />}
-                    {isEditMode ? 'Exit Edit' : 'Edit'}
+                    <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                    <span className="hidden sm:inline">Add Row</span>
+                    <span className="sm:hidden">Add</span>
                   </button>
-                </>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Content */}
-      <div className="max-w-7xl mx-auto p-4">
-        {/* Error Banner */}
-        {error && (
-          <div className="bg-red-50 border border-red-200 rounded-md p-4 mb-4">
-            <p className="text-red-700 text-sm">{error}</p>
-          </div>
-        )}
-
-        {/* Table */}
-        <div className="rounded-lg overflow-hidden relative">
-          <div className="overflow-x-auto">
-            <table className="w-full table-fixed mt-10">
-              <thead className="bg-white border border-gray-200">
-                <tr>
-                  <th className="px-4 py-4 text-left text-sm font-medium text-gray-700 w-16">S.No</th>
-                  <th className="px-4 py-4 text-left text-sm font-medium text-gray-700 w-60">Medicine</th>
-                  <th className="px-4 py-4 text-left text-sm font-medium text-gray-700 w-32">Dosage</th>
-                  <th className="px-4 py-4 text-left text-sm font-medium text-gray-700 w-40">Frequency</th>
-                  <th className="px-4 py-4 text-left text-sm font-medium text-gray-700 w-36">When</th>
-                  <th className="px-4 py-4 text-left text-sm font-medium text-gray-700 w-32">Duration</th>
-                  {isEditMode && (
-                    <th className="px-4 py-4 text-center text-sm font-medium text-gray-700 w-20">Actions</th>
-                  )}
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200">
-                {medications.length === 0 ? (
-                  <tr>
-                    <td colSpan={isEditMode ? "7" : "6"} className="px-4 py-12 text-center text-gray-500">
-                      <div>
-                        {isEditMode ? (
-                          <>
-                            <p className="mb-2 text-orange-600 font-medium">All medications have been deleted</p>
-                            <p className="text-sm text-gray-400 mb-3">You can add new medications or save to confirm deletion</p>
-                            <button
-                              onClick={handleAddRow}
-                              className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors text-sm"
-                            >
-                              <Plus className="w-4 h-4" />
-                              Add New Medication
-                            </button>
-                          </>
-                        ) : (
-                          <>
-                            <p className="mb-2">No medications recorded yet</p>
-                            <p className="text-sm text-gray-400">Click "Add First Medication" to get started</p>
-                          </>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                ) : (
-                  medications.map((medication, index) => (
-                    <tr key={medication.id} className="hover:bg-gray-50">
-                      {renderTableCell(medication, 'serialNo', index)}
-                      {renderTableCell(medication, 'medicationName')}
-                      {renderTableCell(medication, 'dosage')}
-                      {renderTableCell(medication, 'frequency')}
-                      {renderTableCell(medication, 'when')}
-                      {renderTableCell(medication, 'duration')}
-                      {isEditMode && renderTableCell(medication, 'actions')}
-                    </tr>
-                  ))
                 )}
-              </tbody>
-            </table>
-          </div>
-
-          {/* Bottom Action Bar */}
-          <div className="px-4 py-4 border-t border-gray-200 flex justify-end items-center">
-            <div className="flex gap-3 items-center">
-              {isEditMode && (
-                <>
-                  <button
-                    onClick={handleCancel}
-                    disabled={saving}
-                    className="px-6 py-2 text-gray-700 bg-white cursor-pointer border border-gray-300 rounded-md hover:bg-gray-50 transition-colors disabled:opacity-50"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    onClick={handleSave}
-                    disabled={saving}
-                    className="flex items-center gap-2 px-4 py-2 cursor-pointer bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50"
-                  >
-                    {saving ? (
-                      <>
-                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                        {mode === 'fromProforma' ? 'Saving & Next...' : 'Saving...'}
-                      </>
-                    ) : (
-                      <>
-                        <Save className="w-4 h-4" />
-                        {mode === 'fromProforma' ? 'Next' : 'Save Changes'}
-                      </>
-                    )}
-                  </button>
-                </>
-              )}
-            </div>
+                <button
+                  onClick={() => setIsEditMode(!isEditMode)}
+                  className={`flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 rounded-md transition-colors cursor-pointer border text-xs sm:text-sm flex-1 sm:flex-initial ${
+                    isEditMode
+                      ? 'text-orange-600 border-orange-600 hover:bg-orange-50'
+                      : 'text-blue-600 border-blue-600 hover:bg-blue-50'
+                  }`}
+                >
+                  {isEditMode ? <X className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> : <Edit3 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />}
+                  {isEditMode ? 'Exit Edit' : 'Edit'}
+                </button>
+              </>
+            )}
           </div>
         </div>
       </div>
     </div>
-  );
+
+    {/* Content */}
+    <div className="max-w-7xl mx-auto p-3 sm:p-4">
+      {/* Error Banner */}
+      {error && (
+        <div className="bg-red-50 border border-red-200 rounded-md p-3 sm:p-4 mb-3 sm:mb-4">
+          <p className="text-red-700 text-xs sm:text-sm">{error}</p>
+        </div>
+      )}
+
+      {/* Desktop Table View */}
+      <div className="hidden md:block rounded-lg overflow-hidden relative">
+        <div className="overflow-x-auto">
+          <table className="w-full table-fixed mt-10">
+            <thead className="bg-white border border-gray-200">
+              <tr>
+                <th className="px-4 py-4 text-left text-sm font-medium text-gray-700 w-16">S.No</th>
+                <th className="px-4 py-4 text-left text-sm font-medium text-gray-700 w-60">Medicine</th>
+                <th className="px-4 py-4 text-left text-sm font-medium text-gray-700 w-32">Dosage</th>
+                <th className="px-4 py-4 text-left text-sm font-medium text-gray-700 w-40">Frequency</th>
+                <th className="px-4 py-4 text-left text-sm font-medium text-gray-700 w-36">When</th>
+                <th className="px-4 py-4 text-left text-sm font-medium text-gray-700 w-32">Duration</th>
+                {isEditMode && (
+                  <th className="px-4 py-4 text-center text-sm font-medium text-gray-700 w-20">Actions</th>
+                )}
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-200">
+              {medications.length === 0 ? (
+                <tr>
+                  <td colSpan={isEditMode ? "7" : "6"} className="px-4 py-12 text-center text-gray-500">
+                    <div>
+                      {isEditMode ? (
+                        <>
+                          <p className="mb-2 text-orange-600 font-medium">All medications have been deleted</p>
+                          <p className="text-sm text-gray-400 mb-3">You can add new medications or save to confirm deletion</p>
+                          <button
+                            onClick={handleAddRow}
+                            className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors text-sm"
+                          >
+                            <Plus className="w-4 h-4" />
+                            Add New Medication
+                          </button>
+                        </>
+                      ) : (
+                        <>
+                          <p className="mb-2">No medications recorded yet</p>
+                          <p className="text-sm text-gray-400">Click "Add First Medication" to get started</p>
+                        </>
+                      )}
+                    </div>
+                  </td>
+                </tr>
+              ) : (
+                medications.map((medication, index) => (
+                  <tr key={medication.id} className="hover:bg-gray-50">
+                    {renderTableCell(medication, 'serialNo', index)}
+                    {renderTableCell(medication, 'medicationName')}
+                    {renderTableCell(medication, 'dosage')}
+                    {renderTableCell(medication, 'frequency')}
+                    {renderTableCell(medication, 'when')}
+                    {renderTableCell(medication, 'duration')}
+                    {isEditMode && renderTableCell(medication, 'actions')}
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Bottom Action Bar */}
+        <div className="px-4 py-4 border-t border-gray-200 flex justify-end items-center">
+          <div className="flex gap-3 items-center">
+            {isEditMode && (
+              <>
+                <button
+                  onClick={handleCancel}
+                  disabled={saving}
+                  className="px-6 py-2 text-gray-700 bg-white cursor-pointer border border-gray-300 rounded-md hover:bg-gray-50 transition-colors disabled:opacity-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleSave}
+                  disabled={saving}
+                  className="flex items-center gap-2 px-4 py-2 cursor-pointer bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50"
+                >
+                  {saving ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      {mode === 'fromProforma' ? 'Saving & Next...' : 'Saving...'}
+                    </>
+                  ) : (
+                    <>
+                      <Save className="w-4 h-4" />
+                      {mode === 'fromProforma' ? 'Next' : 'Save Changes'}
+                    </>
+                  )}
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile Card View */}
+      <div className="md:hidden space-y-3 mt-4">
+        {medications.length === 0 ? (
+          <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 text-center">
+            {isEditMode ? (
+              <>
+                <p className="mb-2 text-orange-600 font-medium text-sm">All medications have been deleted</p>
+                <p className="text-xs text-gray-400 mb-3">You can add new medications or save to confirm deletion</p>
+                <button
+                  onClick={handleAddRow}
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors text-sm"
+                >
+                  <Plus className="w-4 h-4" />
+                  Add New Medication
+                </button>
+              </>
+            ) : (
+              <>
+                <p className="mb-2 text-sm text-gray-600">No medications recorded yet</p>
+                <p className="text-xs text-gray-400">Click "Add Medication" to get started</p>
+              </>
+            )}
+          </div>
+        ) : (
+          medications.map((medication, index) => (
+            <div key={medication.id} className="bg-white border border-gray-200 rounded-lg p-3 shadow-sm">
+              <div className="flex items-start justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  <span className="flex items-center justify-center w-6 h-6 bg-blue-100 text-blue-600 rounded-full text-xs font-semibold">
+                    {index + 1}
+                  </span>
+                  {medication.isNew && (
+                    <span className="px-2 py-0.5 bg-green-100 text-green-700 text-xs rounded-full font-medium">
+                      New
+                    </span>
+                  )}
+                </div>
+                {isEditMode && (
+                  <button
+                    onClick={() => handleDeleteRow(medication.id)}
+                    className="p-1.5 text-red-600 hover:bg-red-50 rounded transition-colors"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                {/* Medicine Name */}
+                <div>
+                  <label className="block text-xs font-medium text-gray-500 mb-1">Medicine</label>
+                  {isEditMode ? (
+                    <input
+                      type="text"
+                      value={medication.medicationName}
+                      onChange={(e) => handleInputChange(medication.id, 'medicationName', e.target.value)}
+                      placeholder="Enter medicine name"
+                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  ) : (
+                    <p className="text-sm text-gray-900">{medication.medicationName || '-'}</p>
+                  )}
+                </div>
+
+                {/* Dosage */}
+                <div>
+                  <label className="block text-xs font-medium text-gray-500 mb-1">Dosage</label>
+                  {isEditMode ? (
+                    <input
+                      type="text"
+                      value={medication.dosage}
+                      onChange={(e) => handleInputChange(medication.id, 'dosage', e.target.value)}
+                      placeholder="e.g., 500mg"
+                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  ) : (
+                    <p className="text-sm text-gray-900">{medication.dosage || '-'}</p>
+                  )}
+                </div>
+
+                {/* Frequency */}
+                <div>
+                  <label className="block text-xs font-medium text-gray-500 mb-1">Frequency</label>
+                  {isEditMode ? (
+                    <select
+                      value={medication.frequency}
+                      onChange={(e) => handleInputChange(medication.id, 'frequency', e.target.value)}
+                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                    >
+                      <option value="">Select frequency</option>
+                      <option value="Once daily">Once daily</option>
+                      <option value="Twice daily">Twice daily</option>
+                      <option value="Three times daily">Three times daily</option>
+                      <option value="Four times daily">Four times daily</option>
+                      <option value="As needed">As needed</option>
+                    </select>
+                  ) : (
+                    <p className="text-sm text-gray-900">{medication.frequency || '-'}</p>
+                  )}
+                </div>
+
+                {/* When */}
+                <div>
+                  <label className="block text-xs font-medium text-gray-500 mb-1">When</label>
+                  {isEditMode ? (
+                    <select
+                      value={medication.when}
+                      onChange={(e) => handleInputChange(medication.id, 'when', e.target.value)}
+                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                    >
+                      <option value="">Select timing</option>
+                      <option value="Before food">Before food</option>
+                      <option value="After food">After food</option>
+                      <option value="With food">With food</option>
+                      <option value="Empty stomach">Empty stomach</option>
+                      <option value="Anytime">Anytime</option>
+                    </select>
+                  ) : (
+                    <p className="text-sm text-gray-900">{medication.when || '-'}</p>
+                  )}
+                </div>
+
+                {/* Duration */}
+                <div>
+                  <label className="block text-xs font-medium text-gray-500 mb-1">Duration</label>
+                  {isEditMode ? (
+                    <input
+                      type="text"
+                      value={medication.duration}
+                      onChange={(e) => handleInputChange(medication.id, 'duration', e.target.value)}
+                      placeholder="e.g., 7 days"
+                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  ) : (
+                    <p className="text-sm text-gray-900">{medication.duration || '-'}</p>
+                  )}
+                </div>
+              </div>
+            </div>
+          ))
+        )}
+
+        {/* Mobile Action Buttons */}
+        {isEditMode && medications.length > 0 && (
+          <div className="sticky bottom-0 bg-white border-t border-gray-200 p-3 -mx-3 flex gap-2">
+            <button
+              onClick={handleCancel}
+              disabled={saving}
+              className="flex-1 px-4 py-2.5 text-gray-700 bg-white cursor-pointer border border-gray-300 rounded-md hover:bg-gray-50 transition-colors disabled:opacity-50 text-sm font-medium"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleSave}
+              disabled={saving}
+              className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 cursor-pointer bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50 text-sm font-medium"
+            >
+              {saving ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  {mode === 'fromProforma' ? 'Saving...' : 'Saving...'}
+                </>
+              ) : (
+                <>
+                  <Save className="w-4 h-4" />
+                  {mode === 'fromProforma' ? 'Next' : 'Save'}
+                </>
+              )}
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  </div>
+);
 };
 
 export default MedicationTable;
